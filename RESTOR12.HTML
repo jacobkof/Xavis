@@ -1,0 +1,3365 @@
+```html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Javi's Coatepec - Sistema de Gestión v2.1</title>
+  <style>
+    /* Estilos CSS actualizados y mejorados */
+    :root {
+      --primary-color: #2c3e50; /* Azul oscuro */
+      --secondary-color: #1abc9c; /* Verde turquesa */
+      --warning-color: #f39c12; /* Naranja */
+      --danger-color: #e74c3c; /* Rojo */
+      --info-color: #3498db; /* Azul claro */
+      --light-color: #ecf0f1; /* Gris claro */
+      --dark-color: #34495e; /* Azul grisáceo */
+      --success-color: #2ecc71; /* Verde (usado para 'Libre' y 'Servido') */
+      --background-color: #f8f9fa; /* Fondo muy claro */
+      --text-color: #2c3e50;
+      --card-background: #ffffff;
+      --border-color: #dee2e6; /* Borde más suave */
+      --shadow-color: rgba(0, 0, 0, 0.1);
+      --disabled-color: #bdc3c7; /* Gris para deshabilitado */
+    }
+
+    body {
+      font-family: 'Roboto', Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: var(--background-color);
+      color: var(--text-color);
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1300px;
+      margin: 20px auto;
+      padding: 20px;
+      background-color: var(--card-background);
+      border-radius: 8px;
+      box-shadow: 0 4px 12px var(--shadow-color);
+    }
+
+    h1, h2, h3 {
+      color: var(--primary-color);
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    h1 { font-size: 2.2rem; }
+    h2 { font-size: 1.8rem; }
+    h3 { font-size: 1.4rem; margin-top: 1.5rem; }
+
+    .tabs {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 25px;
+      background-color: var(--light-color);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 5px var(--shadow-color);
+    }
+
+    .tab {
+      flex: 1 1 auto; /* Permite que los tabs se ajusten */
+      padding: 15px 20px;
+      cursor: pointer;
+      background-color: transparent;
+      border: none;
+      color: var(--text-color);
+      font-size: 16px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      text-align: center;
+      border-bottom: 3px solid transparent; /* Indicador sutil */
+    }
+
+    .tab:hover:not(:disabled) {
+      background-color: rgba(26, 188, 156, 0.1);
+      color: var(--secondary-color);
+    }
+
+    .tab.active {
+      background-color: var(--secondary-color);
+      color: white;
+      border-bottom-color: var(--primary-color);
+    }
+     /* Estilo para tab deshabilitado */
+     .tab:disabled {
+        color: var(--disabled-color);
+        cursor: not-allowed;
+        background-color: transparent;
+        border-bottom-color: transparent;
+     }
+
+
+    .section {
+      display: none;
+      background-color: var(--card-background);
+      border-radius: 8px;
+      padding: 25px;
+      margin-top: 20px;
+      /* box-shadow: 0 2px 10px var(--shadow-color); */ /* Sombra opcional por sección */
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    /* Grids */
+    .tables-grid, .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 20px;
+    }
+
+    /* Cards: Table, MenuItem */
+    .table, .menuItem {
+      background-color: var(--card-background);
+      border-radius: 8px;
+      padding: 15px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: center;
+      box-shadow: 0 3px 8px var(--shadow-color);
+      position: relative;
+      border: 1px solid var(--border-color);
+    }
+    .table h3, .menuItem p:first-child {
+      margin-top: 0;
+      margin-bottom: 8px;
+      font-size: 1.1rem;
+      color: var(--primary-color);
+    }
+    .table p, .menuItem p {
+      margin: 5px 0;
+      font-size: 0.9rem;
+    }
+
+    .table:hover, .menuItem:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+    }
+    /* Colores específicos para estado de mesa */
+    .table[data-status="libre"] { background-color: var(--success-color); color: white; border-color: #27ae60;}
+    .table[data-status="ocupada"] { background-color: var(--danger-color); color: white; border-color: #c0392b;}
+    .table[data-status="listo"] { background-color: var(--warning-color); color: var(--primary-color); border-color: #d35400;} /* Color texto oscuro para mejor lectura en amarillo */
+
+
+    /* Order Item Styling */
+    .orderItem {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 15px;
+      background-color: var(--light-color);
+      border-radius: 8px;
+      margin-bottom: 12px;
+      box-shadow: 0 2px 5px var(--shadow-color);
+      flex-wrap: wrap; /* Para mejor responsividad */
+       transition: background-color 0.3s ease; /* Transición suave al cambiar estado */
+    }
+     .orderItem[data-item-status="Servido"] {
+        background-color: #e0f2f1; /* Un verde muy pálido */
+        opacity: 0.8;
+     }
+      .orderItem[data-item-status="Servido"] strong {
+          text-decoration: line-through;
+          color: #555;
+      }
+
+
+    .orderItem div:first-child {
+      flex-grow: 1;
+      margin-right: 10px;
+    }
+    .orderItem strong {
+      color: var(--primary-color);
+    }
+    .orderItem .item-status {
+        font-style: italic;
+        font-size: 0.85rem;
+        color: var(--dark-color);
+        margin-left: 5px;
+    }
+    .orderItem .item-status-Listo { color: var(--secondary-color); font-weight: bold;}
+    .orderItem .item-status-En-preparación { color: var(--warning-color); }
+    .orderItem .item-status-Pendiente { color: var(--danger-color); }
+    .orderItem .item-status-Servido { color: var(--success-color); text-decoration: none !important; font-weight: bold;}
+
+
+    .orderItem em { /* Instrucciones especiales */
+      color: var(--dark-color);
+      font-size: 0.85rem;
+      display: block;
+      margin-top: 4px;
+    }
+    .orderItem .item-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 5px; /* Espacio en móvil */
+    }
+    .orderItem .quantity-controls {
+      display: flex;
+      align-items: center;
+    }
+    .orderItem .quantity-controls button {
+      padding: 3px 8px;
+      font-size: 1rem;
+      line-height: 1;
+      min-width: 25px;
+    }
+     .orderItem .quantity-controls span {
+        padding: 0 10px;
+        font-weight: bold;
+     }
+
+    /* Buttons */
+    .btn {
+      padding: 10px 18px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 15px;
+      transition: all 0.3s ease;
+      margin: 5px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: inline-flex; /* Para alinear icono y texto */
+      align-items: center;
+      gap: 5px; /* Espacio entre icono y texto */
+    }
+    .btn-sm { /* Botón pequeño */
+        padding: 4px 10px;
+        font-size: 12px;
+    }
+
+    .btn-primary { background-color: var(--primary-color); color: white; }
+    .btn-secondary { background-color: var(--secondary-color); color: white; }
+    .btn-warning { background-color: var(--warning-color); color: white; }
+    .btn-danger { background-color: var(--danger-color); color: white; }
+    .btn-info { background-color: var(--info-color); color: white; }
+    .btn-light { background-color: var(--light-color); color: var(--dark-color); }
+    .btn-success { background-color: var(--success-color); color: white; } /* Botón de éxito */
+
+
+    .btn:hover:not(:disabled) {
+      opacity: 0.85;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+    .btn:disabled {
+      background-color: var(--disabled-color);
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+
+    /* Order Card (Kitchen, Search) */
+    .order-card {
+      background-color: var(--card-background);
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 10px var(--shadow-color);
+      border: 1px solid var(--border-color);
+    }
+    .order-card h3 { margin-top: 0; }
+    .order-card ul { list-style: none; padding-left: 0; }
+    .order-card li {
+        padding: 8px 0;
+        border-bottom: 1px dashed var(--border-color);
+    }
+     .order-card li:last-child { border-bottom: none; }
+     /* Estilo para item servido en vista cocina/busqueda */
+     .order-card li[data-item-status="Servido"] {
+         opacity: 0.6;
+         font-style: italic;
+     }
+
+
+    /* Modals */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000; /* Asegurar que esté encima */
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.6); /* Oscurecer más */
+    }
+
+    .modal-content {
+      background-color: var(--card-background);
+      margin: 5% auto;
+      padding: 30px;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 650px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+      position: relative;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .close {
+      color: #aaa;
+      position: absolute;
+      right: 15px;
+      top: 15px;
+      font-size: 32px;
+      font-weight: bold;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    .close:hover,
+    .close:focus {
+      color: var(--danger-color);
+      text-decoration: none;
+    }
+
+    /* Tables (Product list, Reports) */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      box-shadow: 0 2px 8px var(--shadow-color);
+      border-radius: 8px;
+      overflow: hidden; /* Para que el borde redondeado funcione con el header */
+    }
+
+    th, td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    th {
+      background-color: var(--primary-color);
+      color: white;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    tr:nth-child(even) {
+      background-color: var(--light-color); /* Fondo alterno suave */
+    }
+    tr:hover {
+        background-color: rgba(26, 188, 156, 0.1); /* Resaltar al pasar el mouse */
+    }
+
+    td button {
+        margin-right: 5px;
+    }
+
+    /* Forms */
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0 15px 0; /* Más espacio inferior */
+      border: 1px solid var(--border-color);
+      border-radius: 5px;
+      font-size: 15px;
+      box-sizing: border-box; /* Importante */
+       transition: border-color 0.3s ease;
+    }
+    input:focus, select:focus, textarea:focus {
+        border-color: var(--secondary-color);
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(26, 188, 156, 0.2);
+    }
+     /* Estilo para input inválido */
+     input.invalid, textarea.invalid, select.invalid {
+         border-color: var(--danger-color) !important;
+         box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.2) !important;
+     }
+
+
+     textarea { resize: vertical; }
+
+    label {
+        font-weight: 500;
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    /* Specific Sections Styling */
+    #tableFilters, #productFilters, #reportControls, #searchControls {
+        margin-bottom: 20px;
+        padding: 15px;
+        background-color: var(--light-color);
+        border-radius: 8px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+    }
+
+    #orderListContainer {
+        max-height: 400px;
+        overflow-y: auto;
+        padding-right: 10px; /* Espacio para scrollbar */
+        margin-bottom: 15px;
+        border: 1px solid var(--border-color);
+        border-radius: 5px;
+        padding: 10px;
+    }
+
+    #total {
+        font-size: 1.3rem;
+        font-weight: bold;
+        color: var(--primary-color);
+        text-align: right;
+        margin-top: 20px;
+    }
+
+    /* Highlighted items (Reports) */
+    .highlighted {
+      background-color: var(--info-color) !important; /* Usar !important para sobreescribir tr:nth-child */
+      color: white;
+      font-weight: bold;
+    }
+    .highlighted td { color: white; } /* Asegurar texto blanco en celdas */
+
+
+    /* Order Preview on Hover (Desktop) */
+    .order-preview {
+      position: absolute;
+      top: 10px;
+      left: calc(100% + 10px); /* Posicionar a la derecha */
+      background-color: var(--card-background);
+      border: 1px solid var(--border-color);
+      padding: 15px;
+      z-index: 5;
+      width: 250px; /* Más ancho */
+      box-shadow: 0 4px 10px var(--shadow-color);
+      border-radius: 8px;
+      display: none; /* Oculto por defecto */
+      font-size: 0.9rem;
+    }
+    .order-preview p, .order-preview ul { margin: 5px 0; }
+    .order-preview ul { padding-left: 20px; }
+
+    /* Mostrar preview solo en pantallas grandes */
+    @media (min-width: 769px) {
+      .table:hover .order-preview {
+        display: block;
+      }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .container {
+          margin: 10px;
+          padding: 15px;
+      }
+      h1 { font-size: 1.8rem; }
+      h2 { font-size: 1.5rem; }
+      h3 { font-size: 1.2rem; }
+
+      .tabs {
+        flex-direction: column;
+      }
+      .tab {
+        width: 100%;
+        border-bottom: 1px solid var(--border-color);
+      }
+       .tab.active { border-bottom-color: var(--primary-color); }
+
+      .tables-grid, .menu-grid {
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+        gap: 15px;
+      }
+
+      .modal-content {
+        width: 95%;
+        margin: 10% auto;
+        padding: 20px;
+      }
+
+      .btn {
+        padding: 12px 15px;
+        font-size: 14px;
+      }
+
+      .table, .menuItem {
+        padding: 15px;
+      }
+
+      .orderItem {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .orderItem .item-controls {
+          align-self: flex-end; /* Alinear controles a la derecha */
+          margin-top: 10px;
+      }
+
+      #tableFilters, #productFilters, #reportControls, #searchControls {
+          flex-direction: column;
+          align-items: stretch;
+      }
+       #tableFilters button, #productFilters button, #reportControls button, #searchControls button {
+           width: 100%;
+           margin-bottom: 5px;
+       }
+       #reportControls input, #reportControls select { width: 100%; }
+
+       #total { text-align: center; }
+    }
+
+    /* Estilos para la búsqueda de productos en Pedidos */
+    #productSearchInput {
+        width: calc(100% - 22px); /* Ajustar ancho por padding */
+        margin-bottom: 15px;
+    }
+
+    /* Loading Indicator */
+    .loading-overlay {
+        display: none; /* Hidden by default */
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255, 255, 255, 0.7);
+        z-index: 2000; /* Above modals */
+        justify-content: center;
+        align-items: center;
+    }
+     .loading-overlay.active {
+         display: flex;
+     }
+     .loading-spinner {
+         border: 5px solid var(--light-color);
+         border-top: 5px solid var(--primary-color);
+         border-radius: 50%;
+         width: 50px;
+         height: 50px;
+         animation: spin 1s linear infinite;
+     }
+
+     @keyframes spin {
+         0% { transform: rotate(0deg); }
+         100% { transform: rotate(360deg); }
+     }
+
+
+  </style>
+  <!-- Importar Chart.js, SheetJS y jsPDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>Javi's Coatepec - Sistema de Gestión</h1>
+    <div class="tabs">
+      <button id="tab-tables" class="tab active" onclick="showSection('tables')">📊 Mesas</button>
+      <button id="tab-orders" class="tab" onclick="showSection('orders')" disabled>📝 Pedidos</button> <!-- Disabled by default -->
+      <button id="tab-kitchen" class="tab" onclick="showSection('kitchen')">🍳 Cocina</button>
+      <button id="tab-products" class="tab" onclick="showSection('products')">🍔 Productos</button>
+      <button id="tab-reports" class="tab" onclick="showSection('reports')">📈 Reportes</button>
+      <button id="tab-search" class="tab" onclick="showSection('search')">🔍 Buscar</button>
+    </div>
+
+    <!-- Sección de Mesas -->
+    <div id="tables" class="section active">
+      <h2>Disponibilidad de Mesas</h2>
+      <div id="tableFilters">
+        <span>Filtrar por estado:</span>
+        <button onclick="filterTables('all')" class="btn btn-sm btn-light active-filter">Todas</button>
+        <button onclick="filterTables('libre')" class="btn btn-sm btn-light">Libres</button>
+        <button onclick="filterTables('ocupada')" class="btn btn-sm btn-light">Ocupadas</button>
+        <button onclick="filterTables('listo')" class="btn btn-sm btn-light">Listas</button>
+      </div>
+      <div id="tablesList" class="tables-grid">
+        <!-- Las mesas se generan aquí -->
+      </div>
+    </div>
+
+    <!-- Sección de Pedidos -->
+    <div id="orders" class="section">
+      <h2>Tomar Pedido - Mesa <span id="selectedTable"></span></h2>
+      <div class="form-group">
+        <label for="waiterSelect">Mesero:</label>
+        <select id="waiterSelect"></select>
+      </div>
+      <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 15px;">
+          <div class="form-group" style="flex: 1;">
+              <label for="categorySelect">Categoría:</label>
+              <select id="categorySelect" onchange="loadMenu()"></select>
+          </div>
+           <div class="form-group" style="flex: 2;">
+               <label for="productSearchInput">Buscar Producto:</label>
+               <input type="text" id="productSearchInput" placeholder="Escribe para buscar..." onkeyup="loadMenu()">
+           </div>
+           <div class="form-group" style="flex: 2;">
+               <label for="specialInstructionsInput">Instrucciones Especiales (opcional):</label>
+               <input type="text" id="specialInstructionsInput" placeholder="Ej: sin cebolla, bien cocido...">
+           </div>
+      </div>
+      <div id="menuItems" class="menu-grid">
+        <!-- Items del menú se cargan aquí -->
+      </div>
+      <h3>Pedido Actual</h3>
+       <div id="orderListContainer">
+           <div id="orderList">
+                <!-- Items del pedido actual se cargan aquí -->
+           </div>
+       </div>
+      <p id="total">Total: $0.00</p>
+      <div style="text-align: center; margin-top: 20px;">
+          <button id="saveOrderButton" onclick="saveOrder()" class="btn btn-primary">💾 Guardar Pedido</button>
+          <button id="initiatePaymentButton" onclick="initiatePayment()" class="btn btn-warning">💳 Procesar Pago</button>
+          <button id="cancelOrderButton" onclick="cancelOrder()" class="btn btn-danger">❌ Cancelar Pedido</button>
+      </div>
+    </div>
+
+    <!-- Sección de Cocina -->
+    <div id="kitchen" class="section">
+      <h2>Pedidos en Cocina</h2>
+      <div id="kitchenOrders">
+        <!-- Pedidos para cocina se cargan aquí -->
+      </div>
+    </div>
+
+    <!-- Sección de Productos -->
+    <div id="products" class="section">
+      <h2>Gestión de Productos</h2>
+      <div class="form-container" style="margin-bottom: 30px; padding: 20px; background-color: var(--light-color); border-radius: 8px;">
+        <h3 id="productFormTitle">Agregar Producto</h3>
+        <input type="hidden" id="editingProductIndex" value="">
+        <div class="form-group">
+            <label for="productNameInput">Nombre del Producto:</label>
+            <input type="text" id="productNameInput" placeholder="Ej: Agua Fresca">
+        </div>
+         <div class="form-group">
+             <label for="productPriceInput">Precio ($):</label>
+             <input type="number" id="productPriceInput" placeholder="Ej: 25.50" step="0.01" min="0">
+         </div>
+         <div class="form-group">
+             <label for="productCategoryInput">Categoría:</label>
+             <select id="productCategoryInput"></select>
+         </div>
+         <div class="form-group">
+             <label for="productPreparationTimeInput">Tiempo de preparación (minutos):</label>
+            <input type="number" id="productPreparationTimeInput" placeholder="Ej: 5" min="0">
+         </div>
+        <button onclick="saveProduct()" class="btn btn-primary">💾 Guardar Producto</button>
+        <button onclick="clearForm()" class="btn btn-light">🔄 Limpiar / Cancelar</button>
+      </div>
+      <div>
+        <h3>Listado de Productos</h3>
+        <div id="productFilters">
+            <label for="filterCategory">Filtrar por Categoría:</label>
+            <select id="filterCategory" onchange="loadProducts()"></select>
+            <button onclick="exportProducts()" class="btn btn-sm btn-info">📤 Exportar Excel</button>
+            <button onclick="document.getElementById('importFile').click()" class="btn btn-sm btn-info">📥 Importar Excel</button>
+            <input type="file" id="importFile" accept=".xlsx, .xls" style="display:none" onchange="importProducts()">
+            <a href="#" onclick="downloadProductLayout()" style="font-size: 0.9rem; margin-left: 10px;">Descargar Layout Ejemplo</a>
+        </div>
+        <table id="productListTable">
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th>Precio</th>
+              <th>Categoría</th>
+              <th>Prep. (min)</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Sección de Reportes -->
+    <div id="reports" class="section">
+      <h2>Reportes de Ventas</h2>
+       <div id="reportControls">
+           <div class="form-group">
+               <label for="reportType">Tipo de Reporte:</label>
+               <select id="reportType" onchange="toggleDateInputs()">
+                   <option value="day">Día</option>
+                   <option value="range">Rango de Fechas</option>
+                   <option value="week">Semana Actual</option>
+                   <option value="month">Mes Actual</option>
+                   <option value="year">Año Actual</option>
+                   <option value="products">Productos Más Vendidos</option>
+               </select>
+           </div>
+           <div class="form-group" id="dateStartGroup">
+               <label for="reportDateStart">Fecha Inicio:</label>
+               <input type="date" id="reportDateStart">
+           </div>
+           <div class="form-group" id="dateEndGroup" style="display: none;">
+               <label for="reportDateEnd">Fecha Fin:</label>
+               <input type="date" id="reportDateEnd">
+           </div>
+            <div class="form-group">
+                <label for="topDishesCount">Resaltar Top:</label>
+                <select id="topDishesCount">
+                  <option value="2">2 Platos</option>
+                  <option value="3">3 Platos</option>
+                  <option value="5">5 Platos</option>
+                </select>
+            </div>
+            <div class="form-group">
+                 <label for="dailyExpenses">Gastos del Periodo ($):</label>
+                <input type="number" id="dailyExpenses" placeholder="Monto de gastos" step="0.01" min="0">
+            </div>
+           <button onclick="generateReport()" class="btn btn-primary">📊 Generar Reporte</button>
+           <button onclick="showSalesChart()" class="btn btn-secondary">📊 Ver Gráfica Productos</button>
+           <button onclick="exportOrders()" class="btn btn-info">📤 Exportar Reporte Excel</button>
+           <button onclick="document.getElementById('importSalesFile').click()" class="btn btn-info">📥 Importar Ventas Excel</button>
+           <input type="file" id="importSalesFile" accept=".xlsx, .xls" style="display:none" onchange="importSales()">
+            <a href="#" onclick="downloadSalesLayout()" style="font-size: 0.9rem; margin-left: 10px;">Descargar Layout Ventas</a>
+       </div>
+
+      <div id="reportResults"></div>
+      <canvas id="salesChart" style="max-width: 800px; margin: 20px auto; display: none;"></canvas>
+    </div>
+
+    <!-- Sección de Búsqueda de Pedidos -->
+    <div id="search" class="section">
+      <h2>Buscar Pedidos</h2>
+      <div id="searchControls">
+        <div class="form-group">
+            <label for="searchCriteria">Buscar por:</label>
+            <select id="searchCriteria" onchange="updateSearchInput()">
+              <option value="orderNumber">Número de Pedido</option>
+              <option value="table">Número de Mesa</option>
+              <option value="waiter">Mesero</option>
+              <option value="status">Estado</option>
+            </select>
+        </div>
+        <div class="form-group" id="searchInputContainer" style="flex-grow: 1;">
+            <!-- El input o select se generará aquí -->
+        </div>
+        <button onclick="searchOrders()" class="btn btn-primary">🔍 Buscar</button>
+      </div>
+      <div id="searchResults"></div>
+    </div>
+  </div>
+
+  <!-- Modales -->
+  <div id="paymentModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('paymentModal')">&times;</span>
+      <h2>Procesar Pago</h2>
+      <div id="paymentDetails"></div>
+       <div class="form-group">
+           <label for="splitBetween">Dividir cuenta entre:</label>
+          <input type="number" id="splitBetween" placeholder="No. personas" min="1" value="1">
+          <button onclick="calculateSplit()" class="btn btn-sm btn-light">Calcular División</button>
+          <div id="splitDetails" style="margin-top: 5px; font-size: 0.9rem;"></div>
+       </div>
+      <div class="form-group">
+        <label for="tipAmount">Propina ($):</label>
+        <input type="number" id="tipAmount" placeholder="Propina (opcional)" step="0.01" min="0" oninput="calculateTotalWithModifiers()">
+      </div>
+       <div class="form-group">
+         <label for="discountPercentage">Descuento (%):</label>
+         <input type="number" id="discountPercentage" placeholder="Ej: 10" step="0.01" min="0" max="100" oninput="calculateTotalWithModifiers()">
+       </div>
+      <p style="font-weight: bold;">Total a Pagar (con propina/desc.): $<span id="finalTotal">0.00</span></p>
+       <div class="form-group">
+         <label for="amountPaid">Cantidad Pagada ($):</label>
+         <input type="number" id="amountPaid" placeholder="Cantidad recibida" step="0.01" min="0" oninput="calculateChange()">
+       </div>
+      <p>Cambio: $<span id="change">0.00</span></p>
+      <button onclick="processPayment()" class="btn btn-primary" style="width: 100%;">✅ Confirmar Pago</button>
+    </div>
+  </div>
+
+  <div id="ticketModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('ticketModal')">&times;</span>
+      <h2>Vista Previa del Ticket</h2>
+      <div id="ticketContent" style="border: 1px solid #ccc; padding: 15px; margin-bottom: 15px; font-family: monospace; white-space: pre-wrap;"></div>
+      <button onclick="generateAndPrintTicketPDF()" class="btn btn-primary">📄 Descargar/Imprimir Ticket (PDF)</button>
+    </div>
+  </div>
+
+  <!-- Modal para Vista Previa de Mesa (Móvil) -->
+  <div id="tablePreviewModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('tablePreviewModal')">&times;</span>
+      <h2>Detalles de Mesa</h2>
+      <div id="tablePreviewContent"></div>
+      <button onclick="proceedToTable()" class="btn btn-primary">Ir a Pedidos</button>
+    </div>
+  </div>
+
+  <!-- Modal para Vista Previa de Producto (Móvil) -->
+  <div id="productPreviewModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('productPreviewModal')">&times;</span>
+      <h2>Detalles del Producto</h2>
+      <div id="productPreviewContent"></div>
+      <label for="productPreviewQuantity">Cantidad:</label>
+      <input type="number" id="productPreviewQuantity" value="1" min="1" style="width: 60px; margin-bottom: 15px;">
+       <label for="productPreviewInstructions">Instrucciones Especiales (opcional):</label>
+       <input type="text" id="productPreviewInstructions" placeholder="Ej: sin cebolla..." style="margin-bottom: 15px;">
+      <button onclick="proceedToProduct()" class="btn btn-primary">➕ Agregar al pedido</button>
+    </div>
+  </div>
+
+  <!-- Loading Indicator -->
+  <div id="loadingIndicator" class="loading-overlay">
+      <div class="loading-spinner"></div>
+  </div>
+
+
+  <script>
+    // Acceder a jsPDF globalmente
+    const { jsPDF } = window.jspdf;
+
+    // --- Variables Globales ---
+    let tables = Array(16).fill().map((_, i) => ({
+      number: i + 1,
+      status: 'libre', // libre, ocupada, listo
+      orderNumber: null,
+      orderTime: null,
+      elapsedTime: null,
+      waiter: null,
+    }));
+    let currentTable = null; // Número de la mesa seleccionada
+    let currentOrder = []; // Array de objetos { name, price, category, preparationTime, quantity, specialInstructions, status, served }
+    let orders = []; // Historial de todos los pedidos
+    let orderNumber = 1000; // Contador para números de pedido únicos
+    let menu = []; // Array de { name, price, category, preparationTime }
+    let categories = []; // Array de strings
+    let waiters = ["Juan", "María", "Pedro", "Ana", "Luis"]; // Meseros disponibles
+    // let salesData = []; // Parece no usarse, considerar eliminar si no es necesario para futuro
+    let currentEditingOrder = null; // Guarda el número de pedido si se está editando uno existente
+    let currentPreviewProduct = null; // Para el modal de vista previa del producto
+    let tableFilter = 'all'; // Filtro actual para la vista de mesas
+    let productChart = null; // Referencia a la instancia de Chart.js
+
+    // --- Constantes ---
+    const ORDER_STATUS = {
+        PENDIENTE: 'Pendiente',
+        EN_PREPARACION: 'En preparación',
+        LISTO: 'Listo',
+        SERVIDO: 'Servido', // Nuevo estado
+        PAGADO: 'Pagado',
+        CANCELADO: 'Cancelado'
+    };
+    const TABLE_STATUS = {
+        LIBRE: 'libre',
+        OCUPADA: 'ocupada',
+        LISTO: 'listo'
+    };
+
+    // --- Funciones de Utilidad ---
+    function showLoading(show) {
+        const loader = document.getElementById('loadingIndicator');
+        if (loader) {
+             loader.style.display = show ? 'flex' : 'none';
+        }
+    }
+
+    function sanitizeString(str) {
+        return str?.toString().trim().toLowerCase() ?? '';
+    }
+
+    // Limpia y valida un elemento de input
+    function validateInput(element, validationFn, message) {
+        element.classList.remove('invalid');
+        if (!validationFn(element.value)) {
+            alert(message);
+            element.classList.add('invalid');
+            element.focus();
+            return false;
+        }
+        return true;
+    }
+
+
+    // --- Funciones de Inicialización ---
+    function init() {
+      loadData(); // Carga datos de LocalStorage si existen
+      loadDefaultMenuAndCategories(); // Carga menú y categorías iniciales si es necesario
+      loadWaiters();
+      loadCategories(); // Carga categorías en los selects correspondientes
+      loadProducts(); // Carga productos en la tabla de gestión
+      updatePedidosTabState(); // Habilitar/deshabilitar tab de pedidos
+      renderTables();
+      showSection('tables'); // Muestra la sección de mesas por defecto
+
+      // Establecer fechas por defecto en reportes
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('reportDateStart').value = today;
+      document.getElementById('reportDateEnd').value = today;
+      toggleDateInputs(); // Ajustar visibilidad de inputs de fecha
+
+      updateSearchInput(); // Configura el input de búsqueda inicial
+
+      // Deshabilitar botones relevantes al inicio
+      disableOrderButtons(true, true, true); // save, payment, cancel
+       filterTables('all'); // Asegura que el filtro 'Todas' esté activo al inicio
+    }
+
+    // Carga menú y categorías por defecto (si no se usa importación y no hay datos guardados)
+    function loadDefaultMenuAndCategories() {
+        if (menu.length === 0 && categories.length === 0) {
+            console.log("Cargando menú y categorías por defecto...");
+            categories = ["Entradas", "Platos Fuertes", "Bebidas", "Postres"];
+            menu = [
+                // Entradas
+                { name: "Guacamole", price: 60.00, category: "Entradas", preparationTime: 8 },
+                { name: "Queso Fundido", price: 75.00, category: "Entradas", preparationTime: 12 },
+                { name: "Nachos", price: 80.00, category: "Entradas", preparationTime: 10 },
+                // Platos Fuertes
+                { name: "Carne Asada", price: 150.00, category: "Platos Fuertes", preparationTime: 20 },
+                { name: "Pollo a la Parrilla", price: 130.00, category: "Platos Fuertes", preparationTime: 25 },
+                { name: "Enchiladas Verdes", price: 110.00, category: "Platos Fuertes", preparationTime: 18 },
+                { name: "Tacos al Pastor (3)", price: 90.00, category: "Platos Fuertes", preparationTime: 15 },
+                // Bebidas
+                { name: "Agua de Horchata", price: 25.00, category: "Bebidas", preparationTime: 3 },
+                { name: "Refresco", price: 20.00, category: "Bebidas", preparationTime: 1 },
+                { name: "Cerveza Nacional", price: 35.00, category: "Bebidas", preparationTime: 2 },
+                { name: "Limonada Mineral", price: 30.00, category: "Bebidas", preparationTime: 4 },
+                // Postres
+                { name: "Flan Napolitano", price: 45.00, category: "Postres", preparationTime: 5 },
+                { name: "Pastel Tres Leches", price: 55.00, category: "Postres", preparationTime: 7 },
+                { name: "Helado Artesanal", price: 40.00, category: "Postres", preparationTime: 3 },
+            ];
+            saveData(); // Guardar datos por defecto si se cargaron
+        }
+    }
+
+    // --- Persistencia de Datos (LocalStorage) ---
+    function saveData() {
+      try {
+          localStorage.setItem('restaurant_tables', JSON.stringify(tables));
+          localStorage.setItem('restaurant_orders', JSON.stringify(orders));
+          localStorage.setItem('restaurant_orderNumber', orderNumber.toString());
+          localStorage.setItem('restaurant_menu', JSON.stringify(menu));
+          localStorage.setItem('restaurant_categories', JSON.stringify(categories));
+          console.log("Datos guardados en LocalStorage.");
+      } catch (error) {
+          console.error("Error al guardar datos en LocalStorage:", error);
+          alert("Hubo un error al guardar los datos. El espacio de almacenamiento podría estar lleno.");
+      }
+    }
+
+    function loadData() {
+        const savedTables = localStorage.getItem('restaurant_tables');
+        const savedOrders = localStorage.getItem('restaurant_orders');
+        const savedOrderNumber = localStorage.getItem('restaurant_orderNumber');
+        const savedMenu = localStorage.getItem('restaurant_menu');
+        const savedCategories = localStorage.getItem('restaurant_categories');
+
+        if (savedTables) tables = JSON.parse(savedTables);
+        if (savedOrders) orders = JSON.parse(savedOrders);
+        if (savedOrderNumber) orderNumber = parseInt(savedOrderNumber, 10);
+        if (savedMenu) menu = JSON.parse(savedMenu);
+        if (savedCategories) categories = JSON.parse(savedCategories);
+        console.log("Datos cargados desde LocalStorage.");
+    }
+
+    // --- Navegación y UI ---
+    function updatePedidosTabState() {
+        const pedidosTab = document.getElementById('tab-orders');
+        if (pedidosTab) {
+            pedidosTab.disabled = (currentTable === null);
+        }
+    }
+
+    function showSection(sectionId) {
+      // Validar si se intenta ir a 'Pedidos' sin mesa seleccionada (ya manejado por 'disabled' pero doble check)
+      if (sectionId === 'orders' && currentTable === null) {
+        alert('Por favor, seleccione una mesa primero.');
+        return; // No cambiar de sección
+      }
+
+      // Ocultar todas las secciones y desactivar tabs
+      document.querySelectorAll('.section').forEach(section => section.classList.remove('active'));
+      document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+
+      // Mostrar la sección y activar el tab correspondiente
+      const sectionElement = document.getElementById(sectionId);
+      const tabElement = document.getElementById(`tab-${sectionId}`); // Usar ID de tab
+      if (sectionElement) sectionElement.classList.add('active');
+      if (tabElement) tabElement.classList.add('active');
+
+      // Lógica específica al mostrar cada sección
+      switch (sectionId) {
+        case 'tables':
+          renderTables();
+          // NO deseleccionar mesa aquí, permite volver a la mesa seleccionada
+          // currentTable = null;
+          // currentOrder = [];
+          // currentEditingOrder = null;
+          // document.getElementById('selectedTable').textContent = '';
+          // updatePedidosTabState();
+          // disableOrderButtons(true, true, true);
+          break;
+        case 'orders':
+          if (currentTable !== null) {
+            document.getElementById('selectedTable').textContent = currentTable;
+            loadMenu(); // Carga el menú filtrado por categoría
+            loadOrderForTable(currentTable); // Carga el pedido existente o inicia uno nuevo
+          }
+          break;
+        case 'kitchen':
+          renderKitchenOrders();
+          break;
+        case 'products':
+          loadCategories(); // Asegura que los selects de categoría estén actualizados
+          loadProducts();   // Muestra la lista de productos
+          clearForm();      // Limpia el formulario de agregar/editar producto
+          break;
+        case 'reports':
+          generateReport(); // Genera un reporte inicial (usualmente del día)
+          break;
+        case 'search':
+          updateSearchInput(); // Configura el campo de búsqueda
+          document.getElementById('searchResults').innerHTML = ''; // Limpia resultados anteriores
+          break;
+      }
+    }
+
+    function closeModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) modal.style.display = 'none';
+    }
+
+    // Habilita/deshabilita los botones principales de la sección de pedidos
+    function disableOrderButtons(save, payment, cancel) {
+        document.getElementById('saveOrderButton').disabled = save;
+        document.getElementById('initiatePaymentButton').disabled = payment;
+        document.getElementById('cancelOrderButton').disabled = cancel;
+    }
+
+    // --- Gestión de Mesas ---
+    function renderTables() {
+      const tablesList = document.getElementById('tablesList');
+      tablesList.innerHTML = ''; // Limpiar antes de renderizar
+
+      // Actualizar tiempo transcurrido antes de renderizar
+       tables.forEach(table => {
+           if (table.status !== TABLE_STATUS.LIBRE && table.orderTime) {
+               table.elapsedTime = getElapsedTime(table.orderTime);
+           } else {
+               table.elapsedTime = null;
+           }
+       });
+
+      tables.forEach(table => {
+        // Aplicar filtro
+        if (tableFilter === 'all' || table.status === tableFilter) {
+          const tableElement = document.createElement('div');
+          tableElement.className = 'table';
+          // tableElement.style.backgroundColor = getTableColor(table.status); // Color aplicado por atributo data-status
+          tableElement.dataset.status = table.status; // Usar data attribute para styling CSS
+          // if (table.status === TABLE_STATUS.LIBRE) tableElement.style.color = '#fff'; // Mejor contraste para verde
+
+          let timeInfo = table.elapsedTime ? `<p>🕒 Tiempo: ${table.elapsedTime}</p>` : '';
+          let statusText = table.status.charAt(0).toUpperCase() + table.status.slice(1);
+          let statusIcon = '';
+          if(table.status === TABLE_STATUS.LIBRE) statusIcon = '✅';
+          if(table.status === TABLE_STATUS.OCUPADA) statusIcon = '🍽️';
+          if(table.status === TABLE_STATUS.LISTO) statusIcon = '🔔';
+
+
+          tableElement.innerHTML = `
+            <h3>Mesa ${table.number}</h3>
+            <p>${statusIcon} ${statusText}</p>
+            ${table.orderNumber ? `<p>Pedido: #${table.orderNumber}</p>` : ''}
+            ${table.waiter ? `<p>Mesero: ${table.waiter}</p>` : ''}
+            ${timeInfo}
+          `;
+
+          // Añadir Previsualización de Pedido (solo si hay pedido activo)
+          const activeOrder = orders.find(o => o.table === table.number && isActiveOrder(o));
+          if (activeOrder) {
+              const orderPreview = document.createElement('div');
+              orderPreview.className = 'order-preview';
+              let itemsPreview = activeOrder.items.slice(0, 3).map(item => `<li>${item.quantity}x ${item.name} - ${item.status}</li>`).join('');
+              if (activeOrder.items.length > 3) itemsPreview += '<li>...</li>';
+
+              orderPreview.innerHTML = `
+                  <p><strong>Mesa ${table.number} - Pedido #${activeOrder.number}</strong></p>
+                  <p>Mesero: ${activeOrder.waiter}</p>
+                  <p>Estado Pedido: ${activeOrder.status}</p>
+                  <p>Tiempo: ${getElapsedTime(activeOrder.orderTime)}</p>
+                  <p><strong>Items:</strong></p>
+                  <ul>${itemsPreview}</ul>
+              `;
+              tableElement.appendChild(orderPreview);
+          }
+
+
+          tableElement.onclick = () => selectTable(table.number);
+          tablesList.appendChild(tableElement);
+        }
+      });
+    }
+
+    function filterTables(status) {
+      tableFilter = status;
+      // Resaltar botón de filtro activo
+      document.querySelectorAll('#tableFilters button').forEach(btn => btn.classList.remove('btn-secondary', 'active-filter'));
+      const activeButton = document.querySelector(`#tableFilters button[onclick="filterTables('${status}')"]`);
+       if(activeButton) {
+           activeButton.classList.add('btn-secondary', 'active-filter'); // Usar clase secundaria para resaltar
+       }
+      renderTables();
+    }
+
+    function getElapsedTime(orderTimeString) {
+      if (!orderTimeString) return 'N/A';
+      try {
+        const now = new Date();
+        const orderTime = new Date(orderTimeString);
+        if (isNaN(orderTime.getTime())) return 'Fecha inválida'; // Control de error
+        const elapsed = now - orderTime;
+        const minutes = Math.floor(elapsed / 60000);
+        const seconds = Math.floor((elapsed % 60000) / 1000);
+        return `${minutes}m ${seconds}s`;
+      } catch (e) {
+          console.error("Error calculando tiempo transcurrido:", e);
+          return 'Error';
+      }
+    }
+
+    // Ya no se necesita, se usa data-status y CSS
+    // function getTableColor(status) { ... }
+
+    function selectTable(tableNumber) {
+      currentTable = tableNumber;
+      updatePedidosTabState(); // Habilitar tab de pedidos
+      const table = tables.find(t => t.number === tableNumber);
+
+      if (!table) return; // Seguridad
+
+      // En pantallas pequeñas, mostrar modal de vista previa
+      if (window.innerWidth <= 768) {
+        showTablePreview(table);
+      } else {
+        // En pantallas grandes, ir directamente a la sección de pedidos
+        proceedToTable();
+      }
+    }
+
+    function showTablePreview(table) {
+      const tablePreviewContent = document.getElementById('tablePreviewContent');
+      let timeInfo = table.elapsedTime ? `<p>Tiempo Transcurrido: ${table.elapsedTime}</p>` : '';
+      tablePreviewContent.innerHTML = `
+        <h3>Mesa ${table.number}</h3>
+        <p>Estado: ${table.status.charAt(0).toUpperCase() + table.status.slice(1)}</p>
+        ${table.orderNumber ? `<p>Pedido Actual: #${table.orderNumber}</p>` : '<p>Sin pedido activo</p>'}
+        ${table.waiter ? `<p>Mesero Asignado: ${table.waiter}</p>` : ''}
+        ${timeInfo}
+      `;
+      document.getElementById('tablePreviewModal').style.display = 'block';
+    }
+
+    // Navega a la sección de pedidos después de seleccionar mesa (directo o desde modal)
+    function proceedToTable() {
+        if (currentTable === null) return;
+        closeModal('tablePreviewModal');
+        showSection('orders'); // Esto ya llama a loadOrderForTable dentro de showSection
+    }
+
+    // --- Gestión de Pedidos ---
+    function loadWaiters() {
+      const waiterSelect = document.getElementById('waiterSelect');
+      waiterSelect.innerHTML = '<option value="">-- Selecciona Mesero --</option>';
+      waiters.forEach(waiter => {
+        const option = document.createElement('option');
+        option.value = waiter;
+        option.textContent = waiter;
+        waiterSelect.appendChild(option);
+      });
+    }
+
+    function loadMenu() {
+        const categorySelect = document.getElementById('categorySelect');
+        const selectedCategory = categorySelect.value || (categories.length > 0 ? categories[0] : '');
+        const menuItemsContainer = document.getElementById('menuItems');
+        const searchTerm = document.getElementById('productSearchInput').value.toLowerCase();
+        menuItemsContainer.innerHTML = '';
+
+        let filteredMenu = menu;
+
+        // Filtrar por categoría si hay una seleccionada
+        if (selectedCategory) {
+            filteredMenu = filteredMenu.filter(item => item.category === selectedCategory);
+        }
+
+        // Filtrar por término de búsqueda
+        if (searchTerm) {
+            filteredMenu = filteredMenu.filter(item => item.name.toLowerCase().includes(searchTerm));
+        }
+
+        filteredMenu.forEach(item => {
+            const menuItem = document.createElement('div');
+            menuItem.className = 'menuItem';
+            menuItem.innerHTML = `<p>${item.name}</p><p>$${item.price.toFixed(2)}</p>`;
+
+            // Click action: show preview on mobile, add directly on desktop
+            menuItem.onclick = () => {
+                if (window.innerWidth <= 768) {
+                    showProductPreview(item);
+                } else {
+                    // Leer instrucciones del input en desktop ANTES de añadir
+                    const specialInstructions = document.getElementById('specialInstructionsInput').value.trim();
+                    addToOrder(item, 1, specialInstructions); // Add 1 unit by default
+                     document.getElementById('specialInstructionsInput').value = ''; // Limpiar campo
+                }
+            };
+            menuItemsContainer.appendChild(menuItem);
+        });
+    }
+
+
+    function showProductPreview(item) {
+      currentPreviewProduct = item;
+      const productPreviewContent = document.getElementById('productPreviewContent');
+      productPreviewContent.innerHTML = `
+        <h3>${item.name}</h3>
+        <p>Precio: $${item.price.toFixed(2)}</p>
+        <p>Categoría: ${item.category}</p>
+        <p>Tiempo estimado: ${item.preparationTime || 0} min</p>
+      `;
+      document.getElementById('productPreviewQuantity').value = 1; // Reset quantity
+      document.getElementById('productPreviewInstructions').value = ''; // Reset instructions
+      document.getElementById('productPreviewModal').style.display = 'block';
+    }
+
+    // Desde el modal de preview del producto (Móvil)
+    function proceedToProduct() {
+      if (!currentPreviewProduct) return;
+      const quantityInput = document.getElementById('productPreviewQuantity');
+      const instructionsInput = document.getElementById('productPreviewInstructions');
+      const quantity = parseInt(quantityInput.value, 10);
+      const specialInstructions = instructionsInput.value.trim();
+
+      if (isNaN(quantity) || quantity < 1) {
+           alert("Por favor, ingresa una cantidad válida (mayor a 0).");
+           quantityInput.focus();
+           return;
+       }
+
+      addToOrder(currentPreviewProduct, quantity, specialInstructions);
+      closeModal('productPreviewModal');
+      currentPreviewProduct = null; // Limpiar
+    }
+
+
+    function addToOrder(item, quantity = 1, specialInstructions = '') {
+        if (!item || quantity < 1) return; // Validación básica
+
+        const waiter = document.getElementById('waiterSelect').value;
+        if (!waiter && !currentEditingOrder) { // Solo requerir al inicio del pedido
+             if (!validateInput(document.getElementById('waiterSelect'), val => !!val, 'Por favor, selecciona un mesero.')) {
+                 return;
+             }
+         }
+
+        // Comprobar si ya existe un item IGUAL (mismo nombre E instrucciones)
+        const identicalItemIndex = currentOrder.findIndex(orderItem =>
+            orderItem.name === item.name &&
+            sanitizeString(orderItem.specialInstructions) === sanitizeString(specialInstructions) &&
+            orderItem.status !== ORDER_STATUS.SERVIDO // No agrupar con items ya servidos
+        );
+
+        if (identicalItemIndex !== -1) {
+             // Incrementar cantidad del item existente
+             currentOrder[identicalItemIndex].quantity += quantity;
+        } else {
+            // Agregar como nuevo item
+            currentOrder.push({
+                ...item, // name, price, category, preparationTime
+                quantity: quantity,
+                specialInstructions: specialInstructions || '',
+                status: ORDER_STATUS.PENDIENTE, // Estado inicial del platillo
+                // served: false // Obsoleto, usamos status 'Servido'
+            });
+        }
+
+        updateOrderSummary();
+        // Habilitar botón de guardar si hay items
+        disableOrderButtons(currentOrder.length === 0, document.getElementById('initiatePaymentButton').disabled, document.getElementById('cancelOrderButton').disabled);
+         // Si se añade un item y el pedido estaba listo/servido, volver a ocupada/en prep
+         checkOrderStatusConsistency();
+    }
+
+    // Verifica si un pedido está en curso (no pagado ni cancelado)
+    function isActiveOrder(order) {
+      return order && order.status !== ORDER_STATUS.PAGADO && order.status !== ORDER_STATUS.CANCELADO;
+    }
+
+    // Carga el pedido activo de una mesa o limpia si no hay
+    function loadOrderForTable(tableNumber) {
+      const existingOrder = orders.find(o => o.table === tableNumber && isActiveOrder(o));
+
+      if (existingOrder) {
+        currentOrder = existingOrder.items;
+        currentEditingOrder = existingOrder.number; // Marcar que estamos editando
+        document.getElementById('waiterSelect').value = existingOrder.waiter || '';
+        document.getElementById('waiterSelect').disabled = true; // No cambiar mesero en pedido existente
+        // Habilitar botones correspondientes
+        disableOrderButtons(false, false, false); // Habilitar todos si hay pedido activo
+      } else {
+        currentOrder = [];
+        currentEditingOrder = null; // No estamos editando
+        document.getElementById('waiterSelect').value = ''; // Limpiar mesero
+        document.getElementById('waiterSelect').disabled = false; // Permitir seleccionar mesero
+        // Deshabilitar botones de pago y cancelación
+        disableOrderButtons(true, true, true); // Deshabilitar todos al inicio
+      }
+      updateOrderSummary();
+    }
+
+
+    function updateOrderSummary() {
+      const orderList = document.getElementById('orderList');
+      orderList.innerHTML = '';
+      let total = 0;
+      let estimatedPrepTime = 0; // Tiempo estimado restante
+
+      if (currentOrder.length === 0) {
+          orderList.innerHTML = '<p style="text-align: center; color: #777;">Aún no hay productos en el pedido.</p>';
+      }
+
+      currentOrder.forEach((item, index) => {
+        const orderItemElement = document.createElement('div');
+        orderItemElement.className = 'orderItem';
+        orderItemElement.dataset.index = index; // Guardar índice para fácil acceso
+        orderItemElement.dataset.itemStatus = item.status; // Para styling CSS
+
+        // Generar HTML del item
+        orderItemElement.innerHTML = `
+          <div>
+            <strong>${item.quantity}x ${item.name}</strong> - $${(item.price * item.quantity).toFixed(2)}
+            <span class="item-status item-status-${item.status.replace(' ', '-')}">(${item.status})</span>
+            ${item.specialInstructions ? `<em>Instrucciones: ${item.specialInstructions}</em>` : ''}
+          </div>
+          <div class="item-controls">
+              ${item.status !== ORDER_STATUS.SERVIDO ? `
+              <div class="quantity-controls">
+                  <button class="btn btn-sm btn-light" onclick="decrementItemQuantity(${index})" title="Reducir cantidad">-</button>
+                  <span>${item.quantity}</span>
+                  <button class="btn btn-sm btn-light" onclick="incrementItemQuantity(${index})" title="Aumentar cantidad">+</button>
+              </div>
+              <button class="btn btn-sm btn-light" onclick="editItemInstructions(${index})" title="Editar instrucciones">📝</button>
+              ${item.status === ORDER_STATUS.PENDIENTE ? `<button class="btn btn-sm btn-danger" onclick="removeItemCompletely(${index})" title="Eliminar item">🗑️</button>` : ''}
+              ` : `<span style='font-size:0.9em; color: grey;'>Item servido</span>` }
+              ${item.status === ORDER_STATUS.LISTO ? `<button class="btn btn-sm btn-success" onclick="markItemServed(${currentEditingOrder}, ${index})" title="Marcar como entregado al cliente">✔ Servido</button>` : ''}
+          </div>
+        `;
+        orderList.appendChild(orderItemElement);
+        total += item.price * item.quantity;
+
+        // Estimación de tiempo (máximo de los no listos/servidos)
+        if (item.preparationTime && item.status !== ORDER_STATUS.LISTO && item.status !== ORDER_STATUS.SERVIDO) {
+           estimatedPrepTime = Math.max(estimatedPrepTime, item.preparationTime || 0);
+        }
+      });
+
+      document.getElementById('total').textContent = `Total: $${total.toFixed(2)} ${estimatedPrepTime > 0 ? `- Prep. estimada: ${estimatedPrepTime} min` : ''}`;
+
+      // Habilitar/deshabilitar botones según estado
+       const hasItems = currentOrder.length > 0;
+       const isExistingOrder = !!currentEditingOrder;
+       // Habilitar guardar si hay items. Habilitar pago/cancel si es un pedido existente.
+       disableOrderButtons(!hasItems, !isExistingOrder, !isExistingOrder);
+    }
+
+    function incrementItemQuantity(index) {
+        if (currentOrder[index] && currentOrder[index].status !== ORDER_STATUS.SERVIDO) {
+            currentOrder[index].quantity++;
+             // Si se incrementa un item listo, quizás el pedido ya no está totalmente listo?
+             checkOrderStatusConsistency();
+            updateOrderSummary();
+        }
+    }
+
+    function decrementItemQuantity(index) {
+        if (currentOrder[index] && currentOrder[index].status !== ORDER_STATUS.SERVIDO) {
+            if (currentOrder[index].quantity > 1) {
+                currentOrder[index].quantity--;
+                updateOrderSummary();
+            } else {
+                // Si la cantidad es 1, preguntar si desea eliminar
+                removeItemCompletely(index); // Llama a la función que ya tiene confirmación
+                // No llamar a updateOrderSummary aquí, removeItemCompletely lo hace
+            }
+        }
+    }
+
+    function editItemInstructions(index) {
+        if (currentOrder[index] && currentOrder[index].status !== ORDER_STATUS.SERVIDO) {
+            const currentInstructions = currentOrder[index].specialInstructions;
+            const newInstructions = prompt(`Editar instrucciones para ${currentOrder[index].name}:`, currentInstructions);
+            if (newInstructions !== null) { // Null si el usuario presiona Cancelar
+                currentOrder[index].specialInstructions = newInstructions.trim();
+                 // Si se editan instrucciones de un item listo, ¿debería volver a pendiente? Decisión: No, cocina ya lo preparó.
+                updateOrderSummary();
+                 saveData(); // Guardar cambio de instrucciones
+            }
+        }
+    }
+
+    // Elimina completamente un item del pedido (independiente de la cantidad)
+    function removeItemCompletely(index) {
+        if (currentOrder[index]) {
+            const itemNameToRemove = currentOrder[index].name;
+             // Solo permitir eliminar si no está listo o servido? Decisión: Permitir eliminar Pendientes/En Prep.
+             if (currentOrder[index].status === ORDER_STATUS.PENDIENTE || currentOrder[index].status === ORDER_STATUS.EN_PREPARACION) {
+                  if (confirm(`¿Seguro que deseas eliminar "${itemNameToRemove}" del pedido?`)) {
+                      currentOrder.splice(index, 1);
+                      checkOrderStatusConsistency(); // Recalcular estado general
+                      updateOrderSummary();
+                       saveData(); // Guardar cambio
+                  }
+             } else {
+                 alert(`No se puede eliminar "${itemNameToRemove}" porque ya está ${currentOrder[index].status.toLowerCase()}.`);
+             }
+        }
+    }
+
+     // Marca un item como Servido (Entregado al cliente)
+     function markItemServed(orderNum, itemIndex) {
+         const order = orders.find(o => o.number === orderNum);
+         if (order && order.items[itemIndex] && order.items[itemIndex].status === ORDER_STATUS.LISTO) {
+             order.items[itemIndex].status = ORDER_STATUS.SERVIDO;
+             console.log(`Item ${itemIndex} del pedido ${orderNum} marcado como ${ORDER_STATUS.SERVIDO}`);
+
+             // No necesita cambiar estado general de la orden ni de la mesa. 'Listo' significa listo de cocina.
+              checkOrderStatus(order); // Solo para recalcular tiempos o estados agregados si fuera necesario
+
+             // Actualizar UI específica de la sección de pedidos
+             if(document.getElementById('orders').classList.contains('active') && currentEditingOrder === orderNum) {
+                 updateOrderSummary();
+             }
+             // Actualizar UI de cocina si está visible
+              if(document.getElementById('kitchen').classList.contains('active')) {
+                  renderKitchenOrders();
+              }
+              // Actualizar UI de búsqueda si está visible
+              if(document.getElementById('search').classList.contains('active')) {
+                  searchOrders(); // Re-ejecutar búsqueda para actualizar detalles
+              }
+
+             saveData();
+         } else {
+             console.warn(`No se pudo marcar como servido: Item ${itemIndex} en pedido ${orderNum} no encontrado o no está 'Listo'.`);
+         }
+     }
+
+    // Guarda el pedido (nuevo o existente)
+    function saveOrder() {
+        if (currentTable === null) {
+            alert('Error: No hay una mesa seleccionada.');
+            return;
+        }
+        if (currentOrder.length === 0) {
+            alert('No hay items en el pedido para guardar.');
+            return;
+        }
+
+        const waiterSelect = document.getElementById('waiterSelect');
+        const waiter = waiterSelect.value;
+         // Solo requerir mesero al crear un NUEVO pedido
+         if (!waiter && !currentEditingOrder) {
+              if (!validateInput(waiterSelect, val => !!val, 'Por favor, selecciona un mesero.')) {
+                  return;
+              }
+         }
+
+        // Calcula el total y el tiempo máximo de preparación (de items no listos/servidos)
+        const total = currentOrder.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        const maxPreparationTime = currentOrder
+                                      .filter(item => item.status !== ORDER_STATUS.LISTO && item.status !== ORDER_STATUS.SERVIDO)
+                                      .reduce((max, item) => Math.max(max, item.preparationTime || 0), 0);
+
+
+        // Si estamos editando un pedido existente...
+        if (currentEditingOrder) {
+            const orderIndex = orders.findIndex(o => o.number === currentEditingOrder);
+            if (orderIndex !== -1) {
+                orders[orderIndex].items = currentOrder; // Actualiza la lista de items
+                orders[orderIndex].total = total; // Actualiza el subtotal
+                orders[orderIndex].maxPreparationTime = maxPreparationTime; // Actualizar tiempo estimado restante
+                // No actualizamos el orderTime al guardar cambios
+                // El estado del pedido (Pendiente, En prep, Listo) se maneja en checkOrderStatus
+                checkOrderStatus(orders[orderIndex]); // Asegura que el estado general sea consistente
+                console.log(`Pedido #${currentEditingOrder} actualizado.`);
+            } else {
+                alert(`Error: No se encontró el pedido #${currentEditingOrder} para actualizar.`);
+                return;
+            }
+        } else {
+            // ...o creando un nuevo pedido
+            const newOrder = {
+              number: orderNumber++,
+              table: currentTable,
+              waiter: waiter,
+              items: currentOrder,
+              status: ORDER_STATUS.PENDIENTE, // Estado inicial
+              total: total,
+              maxPreparationTime: maxPreparationTime,
+              orderTime: new Date().toISOString(), // Hora de creación
+              tip: 0,
+              discountPercentage: 0,
+              finalTotal: total // Total final inicial (puede cambiar con propina/descuento)
+            };
+
+            orders.push(newOrder);
+            // Actualizar estado de la mesa
+            const table = tables.find(t => t.number === currentTable);
+            if (table) {
+                table.status = TABLE_STATUS.OCUPADA;
+                table.orderNumber = newOrder.number;
+                table.orderTime = newOrder.orderTime;
+                table.waiter = waiter;
+            }
+            currentEditingOrder = newOrder.number; // Marcar que ahora estamos editando este nuevo pedido
+            waiterSelect.disabled = true; // Bloquear cambio de mesero
+            console.log(`Nuevo pedido #${newOrder.number} creado para mesa ${currentTable}.`);
+            // El estado inicial es Pendiente, se pasa a En Preparación cuando cocina lo marca
+            checkOrderStatus(newOrder); // Llama por si acaso, aunque debería seguir Pendiente
+        }
+
+        saveData(); // Guardar cambios en LocalStorage
+        alert('Pedido guardado correctamente.');
+        renderTables(); // Actualizar vista de mesas
+        renderKitchenOrders(); // Actualizar vista de cocina
+        // Mantenerse en la sección de pedidos para poder seguir editando o pagar
+        updateOrderSummary(); // Actualiza botones y resumen
+    }
+
+
+    function initiatePayment() {
+      if (currentTable === null) {
+        alert('Selecciona una mesa con un pedido activo.');
+        return;
+      }
+      // Permitir pagar pedidos 'Listo' o 'Ocupada' (si ya guardaron algo)
+      const order = orders.find(o => o.number === currentEditingOrder && isActiveOrder(o) && (o.status === ORDER_STATUS.LISTO || o.items.length > 0));
+
+      if (order) {
+          // Verificar si todos los items están al menos Listos o Servidos antes de pagar?
+          const nonReadyItems = order.items.filter(item => item.status !== ORDER_STATUS.LISTO && item.status !== ORDER_STATUS.SERVIDO);
+          if (nonReadyItems.length > 0) {
+              if (!confirm(`Hay ${nonReadyItems.length} items que aún no están listos/servidos. ¿Deseas continuar con el pago de todas formas?`)) {
+                  return;
+              }
+          }
+          showPaymentModal(order.number);
+      } else {
+        alert('No hay un pedido activo y guardado (o con items listos) para esta mesa.');
+      }
+    }
+
+    function cancelOrder() {
+      if (currentTable === null || !currentEditingOrder) {
+        alert('No hay un pedido activo seleccionado para cancelar.');
+        return;
+      }
+
+      if (confirm(`¿Estás seguro de cancelar el Pedido #${currentEditingOrder} de la Mesa ${currentTable}? Esta acción no se puede deshacer.`)) {
+        const orderIndex = orders.findIndex(o => o.number === currentEditingOrder);
+        if (orderIndex !== -1) {
+          orders[orderIndex].status = ORDER_STATUS.CANCELADO;
+          console.log(`Pedido #${currentEditingOrder} cancelado.`);
+
+          // Liberar la mesa
+          const table = tables.find(t => t.number === currentTable);
+          if (table) {
+            table.status = TABLE_STATUS.LIBRE;
+            table.orderNumber = null;
+            table.orderTime = null;
+            table.waiter = null;
+            table.elapsedTime = null;
+          }
+
+          saveData();
+          // Limpiar estado de la sección de pedidos y volver a mesas
+          currentOrder = [];
+          currentEditingOrder = null;
+          currentTable = null;
+           document.getElementById('selectedTable').textContent = '';
+           document.getElementById('waiterSelect').value = '';
+           document.getElementById('waiterSelect').disabled = false;
+          updateOrderSummary();
+           updatePedidosTabState(); // Deshabilitar tab pedidos
+          showSection('tables'); // Ir a la vista de mesas
+        } else {
+           alert(`Error: No se encontró el pedido #${currentEditingOrder} para cancelar.`);
+        }
+      }
+    }
+
+
+    // --- Gestión de Cocina ---
+    function renderKitchenOrders() {
+      const kitchenOrdersContainer = document.getElementById('kitchenOrders');
+      kitchenOrdersContainer.innerHTML = '';
+
+      const activeKitchenOrders = orders.filter(order =>
+          order.status === ORDER_STATUS.PENDIENTE || order.status === ORDER_STATUS.EN_PREPARACION
+      );
+
+      // Ordenar por tiempo de pedido (más antiguo primero)
+       activeKitchenOrders.sort((a, b) => new Date(a.orderTime) - new Date(b.orderTime));
+
+      if (activeKitchenOrders.length === 0) {
+          kitchenOrdersContainer.innerHTML = '<p style="text-align:center; color: #777;">No hay pedidos pendientes en cocina.</p>';
+          return;
+      }
+
+      activeKitchenOrders.forEach(order => {
+        const orderCard = document.createElement('div');
+        orderCard.className = 'order-card';
+        orderCard.style.borderLeft = `5px solid ${order.status === ORDER_STATUS.PENDIENTE ? 'var(--danger-color)' : 'var(--warning-color)'}`;
+
+        // Calcular ítems por estado para la vista de cocina
+         const pendingItems = order.items.filter(item => item.status === ORDER_STATUS.PENDIENTE).length;
+         const preparingItems = order.items.filter(item => item.status === ORDER_STATUS.EN_PREPARACION).length;
+         const readyItems = order.items.filter(item => item.status === ORDER_STATUS.LISTO).length;
+         const servedItems = order.items.filter(item => item.status === ORDER_STATUS.SERVIDO).length;
+         const totalItems = order.items.length;
+         const kitchenRelevantItems = totalItems - servedItems; // Items que cocina aún podría necesitar ver
+
+        orderCard.innerHTML = `
+          <h3>Pedido #${order.number} - Mesa ${order.table} (${getElapsedTime(order.orderTime)})</h3>
+          <p>Mesero: ${order.waiter} | Estado Pedido: ${order.status}</p>
+          <p>Items Cocina: ${readyItems}/${kitchenRelevantItems} Listos (${pendingItems} Pend, ${preparingItems} Prep)</p>
+          <ul>
+            ${order.items.filter(item => item.status !== ORDER_STATUS.SERVIDO) // No mostrar items servidos en cocina
+                .map((item, index) => {
+                    // Encontrar el índice original en el array completo order.items
+                    const originalIndex = order.items.findIndex(origItem => origItem === item);
+                    return `
+                  <li data-item-status="${item.status}">
+                     <strong>${item.quantity}x ${item.name}</strong> - <i>${item.status}</i>
+                    ${item.specialInstructions ? `<br><small>Inst: ${item.specialInstructions}</small>` : ''}
+                    <div style="margin-top: 5px;">
+                        ${item.status === ORDER_STATUS.PENDIENTE ? `<button onclick="updateDishStatus(${order.number}, ${originalIndex}, '${ORDER_STATUS.EN_PREPARACION}')" class="btn btn-sm btn-warning">▶️ Marcar en Prep.</button>` : ''}
+                        ${item.status === ORDER_STATUS.EN_PREPARACION ? `<button onclick="updateDishStatus(${order.number}, ${originalIndex}, '${ORDER_STATUS.LISTO}')" class="btn btn-sm btn-secondary">🏁 Marcar Listo</button>` : ''}
+                        ${item.status === ORDER_STATUS.LISTO ? `<span style="color: var(--secondary-color); font-weight: bold;">✓ Listo</span>` : ''}
+                        ${item.status === ORDER_STATUS.EN_PREPARACION ? `<button onclick="updateDishStatus(${order.number}, ${originalIndex}, '${ORDER_STATUS.PENDIENTE}')" class="btn btn-sm btn-light">⏪ Pendiente</button>` : ''}
+                         ${item.status === ORDER_STATUS.LISTO ? `<button onclick="updateDishStatus(${order.number}, ${originalIndex}, '${ORDER_STATUS.EN_PREPARACION}')" class="btn btn-sm btn-light">⏪ En Prep.</button>` : ''}
+                    </div>
+                  </li>`;
+            }).join('')}
+             ${servedItems > 0 ? `<li style='color:grey; font-style:italic;'>(${servedItems} items ya servidos)</li>` : ''}
+          </ul>
+          ${order.status === ORDER_STATUS.EN_PREPARACION || order.status === ORDER_STATUS.PENDIENTE ? `<button onclick="markAllItemsReady(${order.number})" class="btn btn-secondary" style="width: 100%;">🏁 Marcar Todo Listo</button>` : ''}
+        `;
+        kitchenOrdersContainer.appendChild(orderCard);
+      });
+    }
+
+    function updateDishStatus(orderNum, itemIndex, newStatus) {
+      const order = orders.find(o => o.number === orderNum);
+      if (order && order.items[itemIndex] && order.items[itemIndex].status !== ORDER_STATUS.SERVIDO) {
+        order.items[itemIndex].status = newStatus;
+
+        // Revisar estado general del pedido y de la mesa
+        checkOrderStatus(order);
+
+        // Actualizar UI
+        renderKitchenOrders();
+        renderTables(); // El estado de la mesa puede cambiar
+        // Si la sección de pedidos está activa y es la orden actual, actualizarla también
+        if (document.getElementById('orders').classList.contains('active') && currentEditingOrder === orderNum) {
+            updateOrderSummary();
+        }
+        saveData();
+      } else {
+          console.warn(`No se pudo actualizar estado: item ${itemIndex} en pedido ${orderNum} no encontrado, ya servido o estado inválido.`);
+      }
+    }
+
+    function markAllItemsReady(orderNum) {
+         const order = orders.find(o => o.number === orderNum);
+         if (order && (order.status === ORDER_STATUS.PENDIENTE || order.status === ORDER_STATUS.EN_PREPARACION)) {
+             let changed = false;
+             order.items.forEach(item => {
+                 // Marcar listos solo los pendientes o en preparación
+                 if (item.status === ORDER_STATUS.PENDIENTE || item.status === ORDER_STATUS.EN_PREPARACION) {
+                     item.status = ORDER_STATUS.LISTO;
+                     changed = true;
+                 }
+             });
+             if (changed) {
+                 checkOrderStatus(order); // Actualizar estado general y de la mesa
+                 renderKitchenOrders();
+                 renderTables();
+                 if (document.getElementById('orders').classList.contains('active') && currentEditingOrder === orderNum) {
+                    updateOrderSummary();
+                 }
+                 saveData();
+             }
+         }
+    }
+
+    // Revisa el estado general del pedido y de la mesa basado en los items
+    function checkOrderStatus(order) {
+        if (!order || order.status === ORDER_STATUS.PAGADO || order.status === ORDER_STATUS.CANCELADO) return;
+
+        const allItemsDone = order.items.every(item => item.status === ORDER_STATUS.LISTO || item.status === ORDER_STATUS.SERVIDO);
+        const anyItemPreparing = order.items.some(item => item.status === ORDER_STATUS.EN_PREPARACION);
+        const anyItemPending = order.items.some(item => item.status === ORDER_STATUS.PENDIENTE);
+
+        let originalOrderStatus = order.status;
+        let newOrderStatus = order.status;
+        let newTableStatus = tables.find(t => t.number === order.table)?.status;
+
+        if (allItemsDone) {
+            newOrderStatus = ORDER_STATUS.LISTO;
+            newTableStatus = TABLE_STATUS.LISTO; // Mesa lista (amarillo)
+        } else if (anyItemPreparing) {
+             newOrderStatus = ORDER_STATUS.EN_PREPARACION;
+             newTableStatus = TABLE_STATUS.OCUPADA; // Mesa ocupada (rojo)
+        } else if (anyItemPending) {
+            // Si no hay ninguno en preparación, pero sí pendientes (y no todos listos/servidos)
+            newOrderStatus = ORDER_STATUS.PENDIENTE;
+            newTableStatus = TABLE_STATUS.OCUPADA; // Mesa ocupada (rojo)
+        } else {
+             // Caso raro: ¿ninguno pendiente, ninguno en prep, pero no todos listos/servidos?
+             // Podría pasar si se canceló un item que estaba en prep. Reevaluar.
+             // Por seguridad, si no cae en los anteriores, lo dejamos En Preparación si no es Pendiente.
+             if (order.status !== ORDER_STATUS.PENDIENTE) {
+                 newOrderStatus = ORDER_STATUS.EN_PREPARACION;
+                 newTableStatus = TABLE_STATUS.OCUPADA;
+             }
+        }
+
+
+        // Solo actualizar si hubo cambios
+        if (order.status !== newOrderStatus) {
+            order.status = newOrderStatus;
+            console.log(`Estado del pedido #${order.number} cambiado a: ${newOrderStatus}`);
+        }
+        const table = tables.find(t => t.number === order.table);
+        // Asegurarse de que la mesa esté asociada al pedido correcto antes de cambiar status
+        if (table && table.orderNumber === order.number && table.status !== newTableStatus) {
+            table.status = newTableStatus;
+            console.log(`Estado de la mesa ${order.table} cambiado a: ${newTableStatus}`);
+        }
+    }
+
+     // Llama a checkOrderStatus si la orden actual está siendo editada
+     function checkOrderStatusConsistency() {
+         if(currentEditingOrder) {
+             const order = orders.find(o => o.number === currentEditingOrder);
+             if (order) {
+                 checkOrderStatus(order);
+                 renderTables(); // Actualizar vista de mesas por si cambia estado
+             }
+         }
+     }
+
+
+    // --- Gestión de Productos ---
+    function loadCategories() {
+      const categorySelect = document.getElementById('productCategoryInput');
+      const filterCategory = document.getElementById('filterCategory');
+      const menuCategorySelect = document.getElementById('categorySelect'); // En sección Pedidos
+
+      // Guardar valor seleccionado si existe (para no perderlo al recargar)
+       const currentFilterVal = filterCategory.value;
+       const currentMenuVal = menuCategorySelect.value;
+       const currentProductVal = categorySelect.value;
+
+
+      // Limpiar selects existentes
+      categorySelect.innerHTML = '<option value="">-- Nueva Categoría --</option>'; // Opción para crear nueva
+      filterCategory.innerHTML = '<option value="">-- Todas --</option>';
+      menuCategorySelect.innerHTML = ''; // Se llena solo con las existentes
+
+       // Asegurar que 'categories' sea un array único y ordenado
+       if (!Array.isArray(categories)) categories = [];
+       const uniqueCategories = [...new Set(categories)].sort(); // Elimina duplicados y ordena
+
+
+      uniqueCategories.forEach(category => {
+        // Opción para formulario de producto (seleccionar existente)
+        const option1 = document.createElement('option');
+        option1.value = category;
+        option1.textContent = category;
+        categorySelect.appendChild(option1);
+
+        // Opción para filtro de lista de productos
+        const option2 = document.createElement('option');
+        option2.value = category;
+        option2.textContent = category;
+        filterCategory.appendChild(option2);
+
+        // Opción para filtro en sección de pedidos
+        const option3 = document.createElement('option');
+        option3.value = category;
+        option3.textContent = category;
+        menuCategorySelect.appendChild(option3);
+      });
+
+       // Restaurar valores seleccionados
+       filterCategory.value = currentFilterVal;
+       menuCategorySelect.value = currentMenuVal;
+       categorySelect.value = currentProductVal;
+
+       // Si la categoría que se estaba editando ya no existe, seleccionar la opción default
+       if (!uniqueCategories.includes(currentProductVal)) {
+           categorySelect.value = "";
+       }
+
+    }
+
+    function saveProduct() {
+      const nameInput = document.getElementById('productNameInput');
+      const priceInput = document.getElementById('productPriceInput');
+      const categorySelect = document.getElementById('productCategoryInput');
+      const prepTimeInput = document.getElementById('productPreparationTimeInput');
+      const editingIndex = document.getElementById('editingProductIndex').value;
+
+      // --- Validaciones ---
+      if (!validateInput(nameInput, val => val.trim() !== '', 'El nombre del producto es obligatorio.')) return;
+       if (!validateInput(priceInput, val => !isNaN(parseFloat(val)) && parseFloat(val) >= 0, 'Ingresa un precio válido (número >= 0).')) return;
+       // Categoría puede ser vacía si quieren crear una nueva (o se escribe en el campo)
+       // Por ahora, asumimos que se debe seleccionar una o será un error implícito.
+       // Para permitir crear nuevas, necesitaríamos un input de texto o lógica adicional.
+       // Simplificación: requerir selección por ahora.
+        if (!validateInput(categorySelect, val => !!val, 'Selecciona una categoría.')) return;
+
+       if (!validateInput(prepTimeInput, val => !isNaN(parseInt(val)) && parseInt(val) >= 0, 'Ingresa un tiempo de preparación válido (número entero >= 0).')) return;
+
+      const productName = nameInput.value.trim();
+      const productPrice = parseFloat(priceInput.value);
+      const productCategory = categorySelect.value; // Ya validado que no está vacío
+      const productPreparationTime = parseInt(prepTimeInput.value, 10);
+
+      // Comprobar si ya existe un producto con el mismo nombre (al crear o al editar si se cambia el nombre)
+      const nameExists = menu.some((p, idx) =>
+            sanitizeString(p.name) === sanitizeString(productName) && // Case-insensitive check
+            idx !== parseInt(editingIndex) // Excluirse a sí mismo al editar
+      );
+      if (nameExists) {
+          alert(`Ya existe un producto llamado "${productName}". Elige un nombre diferente.`);
+          nameInput.classList.add('invalid');
+          nameInput.focus();
+          return;
+      }
+       nameInput.classList.remove('invalid'); // Quitar marca si pasó
+
+
+        const product = {
+          name: productName,
+          price: productPrice,
+          category: productCategory,
+          preparationTime: productPreparationTime
+        };
+
+        let actionMessage = '';
+
+        if (editingIndex === '') {
+          // Agregar nuevo producto
+          menu.push(product);
+          actionMessage = 'Producto agregado correctamente.';
+        } else {
+          // Editar producto existente
+          const index = parseInt(editingIndex, 10);
+          if (index >= 0 && index < menu.length) {
+              menu[index] = product;
+               actionMessage = 'Producto actualizado correctamente.';
+          } else {
+              alert("Error: Índice de producto inválido para editar.");
+              clearForm(); // Limpiar por seguridad
+              return;
+          }
+        }
+
+         // Actualizar categorías si se seleccionó una que no existía (aunque ahora lo validamos)
+         if (!categories.includes(productCategory)) {
+             categories.push(productCategory);
+             loadCategories(); // Recargar todas las listas desplegables de categorías
+         }
+
+        clearForm(); // Limpiar formulario
+        loadProducts(); // Recargar lista de productos
+        loadMenu(); // Recargar menú en sección pedidos por si cambia algo
+        saveData(); // Guardar cambios
+        alert(actionMessage);
+
+    }
+
+    function editProduct(index) {
+        if (index >= 0 && index < menu.length) {
+            const product = menu[index];
+            document.getElementById('productNameInput').value = product.name;
+            document.getElementById('productPriceInput').value = product.price.toFixed(2); // Asegurar formato
+            document.getElementById('productCategoryInput').value = product.category;
+            document.getElementById('productPreparationTimeInput').value = product.preparationTime || 0; // Poner 0 si es undefined/null
+            document.getElementById('editingProductIndex').value = index;
+            document.getElementById('productFormTitle').textContent = 'Editar Producto'; // Cambiar título
+
+            // Limpiar clases de validación
+            document.getElementById('productNameInput').classList.remove('invalid');
+            document.getElementById('productPriceInput').classList.remove('invalid');
+            document.getElementById('productCategoryInput').classList.remove('invalid');
+            document.getElementById('productPreparationTimeInput').classList.remove('invalid');
+
+            window.scrollTo(0, 0); // Subir al inicio de la página para ver el form
+            document.getElementById('productNameInput').focus(); // Foco en el primer campo
+        } else {
+            alert("Error: Índice de producto inválido.");
+        }
+    }
+
+    function deleteProduct(index) {
+       if (index >= 0 && index < menu.length) {
+            const productName = menu[index].name;
+            if (confirm(`¿Estás seguro de eliminar el producto "${productName}"? Esta acción no se puede deshacer.`)) {
+                menu.splice(index, 1);
+                loadProducts(); // Recargar la lista
+                loadMenu(); // Recargar el menú en pedidos
+                 // No es necesario recargar categorías aquí, solo se eliminó un producto
+                 // Si se quisiera eliminar categoría si queda vacía, se necesitaría lógica adicional
+                saveData(); // Guardar cambios
+                alert(`Producto "${productName}" eliminado.`);
+                 clearForm(); // Limpiar formulario si se estaba editando este producto
+            }
+        } else {
+            alert("Error: Índice de producto inválido para eliminar.");
+        }
+    }
+
+    // Limpia el formulario de agregar/editar producto y quita validaciones
+    function clearForm() {
+      document.getElementById('productNameInput').value = '';
+      document.getElementById('productPriceInput').value = '';
+      document.getElementById('productCategoryInput').value = ''; // Resetear categoría
+      document.getElementById('productPreparationTimeInput').value = '';
+      document.getElementById('editingProductIndex').value = '';
+      document.getElementById('productFormTitle').textContent = 'Agregar Producto'; // Restaurar título
+
+       // Limpiar clases de validación
+      document.getElementById('productNameInput').classList.remove('invalid');
+      document.getElementById('productPriceInput').classList.remove('invalid');
+      document.getElementById('productCategoryInput').classList.remove('invalid');
+      document.getElementById('productPreparationTimeInput').classList.remove('invalid');
+    }
+
+    // Carga los productos en la tabla de la sección Productos
+    function loadProducts() {
+      const productTableBody = document.getElementById('productListTable')?.getElementsByTagName('tbody')[0];
+       if (!productTableBody) return; // Si la tabla no existe en el DOM actual
+
+      const filterCategoryValue = document.getElementById('filterCategory').value;
+      productTableBody.innerHTML = ''; // Limpiar tabla
+
+      const filtered = menu.filter(item => !filterCategoryValue || item.category === filterCategoryValue);
+
+      if (filtered.length === 0) {
+          const row = productTableBody.insertRow();
+          const cell = row.insertCell(0);
+          cell.colSpan = 5; // Abarcar todas las columnas
+          cell.textContent = 'No hay productos para mostrar con los filtros actuales.';
+          cell.style.textAlign = 'center';
+          cell.style.color = '#777';
+      } else {
+          filtered.forEach((item) => {
+             // Encontrar el índice original en el array `menu` para editar/eliminar correctamente
+             // Importante: Asegurarse de que la combinación sea única o usar un ID si se implementa
+            const originalIndex = menu.findIndex(m => m.name === item.name && m.category === item.category && m.price === item.price && m.preparationTime === item.preparationTime);
+
+            const row = productTableBody.insertRow();
+            row.insertCell(0).textContent = item.name;
+            row.insertCell(1).textContent = `$${item.price.toFixed(2)}`;
+            row.insertCell(2).textContent = item.category;
+            row.insertCell(3).textContent = item.preparationTime || 0; // Mostrar 0 si no está definido
+            row.insertCell(4).innerHTML = `
+              <button onclick="editProduct(${originalIndex})" class="btn btn-sm btn-primary">✏️ Editar</button>
+              <button onclick="deleteProduct(${originalIndex})" class="btn btn-sm btn-danger">🗑️ Eliminar</button>
+            `;
+          });
+      }
+    }
+
+    // --- Importar/Exportar Productos (Excel) ---
+    // Mapeo de cabeceras esperadas (case-insensitive keys) y la propiedad JS correspondiente
+    const productImportHeaders = {
+        'producto': 'name',
+        'precio': 'price',
+        'categoría': 'category',
+        'categoria': 'category', // Alias
+        'tiempo preparacion (min)': 'preparationTime',
+        'tiempo preparación (min)': 'preparationTime', // Alias con acento
+        'prep. (min)': 'preparationTime' // Alias corto
+    };
+
+
+    function exportProducts() {
+       if (menu.length === 0) {
+           alert("No hay productos para exportar.");
+           return;
+       }
+       showLoading(true);
+      // Usar las cabeceras "oficiales" para exportar
+      const exportData = menu.map(item => ({
+        'Producto': item.name,
+        'Precio': item.price,
+        'Categoría': item.category,
+        'Tiempo Preparacion (min)': item.preparationTime || 0
+      }));
+
+      const worksheet = XLSX.utils.json_to_sheet(exportData);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Productos");
+
+       worksheet['!cols'] = [{ wch: 30 }, { wch: 10 }, { wch: 20 }, { wch: 25 }]; // Ancho de columnas
+
+      try {
+          XLSX.writeFile(workbook, "productos_restaurante.xlsx");
+          console.log("Productos exportados a Excel.");
+           showLoading(false);
+           alert("Productos exportados exitosamente a 'productos_restaurante.xlsx'");
+      } catch (error) {
+          console.error("Error al exportar productos:", error);
+          showLoading(false);
+          alert("Hubo un error al generar el archivo Excel.");
+      }
+    }
+
+    function importProducts() {
+      const input = document.getElementById('importFile');
+      const file = input.files[0];
+
+      if (!file) {
+        alert("Por favor, selecciona un archivo Excel (.xlsx o .xls) primero.");
+        return;
+      }
+       showLoading(true); // Mostrar indicador de carga
+
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        try {
+            const data = new Uint8Array(event.target.result);
+            const workbook = XLSX.read(data, { type: "array" });
+            const sheetName = workbook.SheetNames[0]; // Usar la primera hoja
+            const sheet = workbook.Sheets[sheetName];
+            const importedData = XLSX.utils.sheet_to_json(sheet, { raw: false }); // raw:false para intentar parsear tipos
+
+            if (importedData.length === 0) {
+                 showLoading(false);
+                 alert("El archivo seleccionado está vacío o no contiene datos en la primera hoja.");
+                 return;
+            }
+
+            // --- Validación de Cabeceras (flexible) ---
+            const sheetHeaders = XLSX.utils.sheet_to_json(sheet, { header: 1 })[0] || [];
+            const lowerCaseHeaders = sheetHeaders.map(h => sanitizeString(h));
+            const expectedLowerHeaders = Object.keys(productImportHeaders);
+            const missingHeaders = expectedLowerHeaders.filter(eh => !lowerCaseHeaders.includes(eh) && eh !== 'categoria' && eh !== 'tiempo preparación (min)' && eh !== 'prep. (min)'); // No alertar por alias faltantes si el principal está
+
+            if (missingHeaders.length > 0) {
+                // Intentar encontrar al menos una cabecera principal
+                const hasName = lowerCaseHeaders.includes('producto');
+                const hasPrice = lowerCaseHeaders.includes('precio');
+                const hasCategory = lowerCaseHeaders.includes('categoría') || lowerCaseHeaders.includes('categoria');
+                const hasTime = lowerCaseHeaders.includes('tiempo preparacion (min)') || lowerCaseHeaders.includes('tiempo preparación (min)') || lowerCaseHeaders.includes('prep. (min)');
+
+                if(!hasName || !hasPrice || !hasCategory || !hasTime) {
+                    showLoading(false);
+                    alert(`Faltan cabeceras esenciales o no coinciden (ignorando mayúsculas/minúsculas y espacios): ${missingHeaders.join(', ')}. \nPor favor, usa el layout de ejemplo.`);
+                    return;
+                } else {
+                    console.warn("Algunas cabeceras esperadas faltan, pero se encontraron las esenciales. Procediendo...");
+                }
+            }
+             // --- Fin Validación Cabeceras ---
+
+
+            let addedCount = 0;
+            let updatedCount = 0;
+            let skippedCount = 0;
+            const importedCategories = new Set(); // Para actualizar lista de categorías
+            const errors = []; // Para registrar errores por fila
+
+            importedData.forEach((row, rowIndex) => {
+                const productData = {};
+                let validRow = true;
+                let rowError = `Fila ${rowIndex + 2}: `;
+
+                 // Mapear datos usando las cabeceras flexibles
+                 Object.keys(row).forEach(header => {
+                      const lowerHeader = sanitizeString(header);
+                      const propName = productImportHeaders[lowerHeader];
+                      if (propName) {
+                          productData[propName] = row[header]; // Asignar valor
+                      }
+                 });
+
+
+                // Validar datos parseados
+                productData.name = productData.name?.toString().trim();
+                productData.price = parseFloat(productData.price);
+                productData.category = productData.category?.toString().trim();
+                productData.preparationTime = parseInt(productData.preparationTime, 10);
+
+
+                 if (!productData.name) { validRow = false; rowError += "Falta nombre. "; }
+                 if (isNaN(productData.price) || productData.price < 0) { validRow = false; rowError += "Precio inválido. "; }
+                 if (!productData.category) { validRow = false; rowError += "Falta categoría. "; }
+                 if (isNaN(productData.preparationTime) || productData.preparationTime < 0) { validRow = false; rowError += "Tiempo prep. inválido. "; }
+
+
+                if (!validRow) {
+                    console.warn(rowError, row);
+                    errors.push(rowError);
+                    skippedCount++;
+                    return; // Saltar esta fila
+                }
+
+                // Buscar si el producto ya existe por nombre (case-insensitive)
+                const existingProductIndex = menu.findIndex(item => sanitizeString(item.name) === sanitizeString(productData.name));
+
+                if (existingProductIndex !== -1) {
+                    // Actualizar producto existente
+                    menu[existingProductIndex] = productData;
+                    updatedCount++;
+                } else {
+                    // Agregar nuevo producto
+                    menu.push(productData);
+                    addedCount++;
+                }
+                 importedCategories.add(productData.category); // Añadir categoría a la lista
+            });
+
+            // Actualizar la lista global de categorías
+            categories = [...new Set([...categories, ...importedCategories])];
+
+            // Actualizar UI y guardar
+            loadProducts();
+            loadCategories();
+            loadMenu();
+            saveData();
+            showLoading(false); // Ocultar indicador
+
+            let resultMessage = `Importación completada:\n- ${addedCount} productos agregados.\n- ${updatedCount} productos actualizados.\n- ${skippedCount} filas ignoradas.`;
+            if (errors.length > 0) {
+                 console.error("Errores durante la importación:", errors);
+                 resultMessage += `\n\nSe encontraron errores en ${errors.length} filas (ver consola para detalles).`;
+            }
+            alert(resultMessage);
+
+        } catch (error) {
+            console.error("Error al importar productos:", error);
+            showLoading(false); // Asegurar que se oculta en caso de error
+            alert("Error al procesar el archivo Excel. Asegúrate de que el formato sea correcto, las cabeceras coincidan (ver layout) y el archivo no esté corrupto.");
+        } finally {
+            input.value = ''; // Limpiar el input de archivo
+        }
+      };
+       reader.onerror = function() {
+            showLoading(false);
+            alert("Error al leer el archivo seleccionado.");
+            input.value = '';
+        };
+      reader.readAsArrayBuffer(file);
+    }
+
+    function downloadProductLayout() {
+      const layoutData = [
+        // Usar las cabeceras "oficiales" que la función de exportación genera
+        { 'Producto': "Ej: Torta Cubana", 'Precio': 120.50, 'Categoría': "Ej: Tortas", 'Tiempo Preparacion (min)': 15 },
+        { 'Producto': "Ej: Agua Jamaica", 'Precio': 25.00, 'Categoría': "Ej: Bebidas", 'Tiempo Preparacion (min)': 5 }
+      ];
+
+      const worksheet = XLSX.utils.json_to_sheet(layoutData);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "LayoutProductos");
+       worksheet['!cols'] = [{ wch: 30 }, { wch: 10 }, { wch: 20 }, { wch: 25 }];
+
+      try {
+          XLSX.writeFile(workbook, "Layout_Productos_Ejemplo.xlsx");
+      } catch (error) {
+           console.error("Error al generar layout de productos:", error);
+           alert("Hubo un error al generar el archivo de ejemplo.");
+      }
+    }
+
+    // --- Generación de Reportes ---
+
+    // Controla la visibilidad de los inputs de fecha según el tipo de reporte
+     function toggleDateInputs() {
+        const reportType = document.getElementById('reportType').value;
+        const dateStartGroup = document.getElementById('dateStartGroup');
+        const dateEndGroup = document.getElementById('dateEndGroup');
+
+        if (reportType === 'day') {
+            dateStartGroup.style.display = 'block';
+            dateEndGroup.style.display = 'none';
+             dateStartGroup.querySelector('label').textContent = 'Fecha:'; // Cambiar label
+        } else if (reportType === 'range') {
+            dateStartGroup.style.display = 'block';
+            dateEndGroup.style.display = 'block';
+             dateStartGroup.querySelector('label').textContent = 'Fecha Inicio:'; // Restaurar/establecer label
+        } else { // week, month, year, products
+            dateStartGroup.style.display = 'none';
+            dateEndGroup.style.display = 'none';
+        }
+    }
+
+
+    function generateReport() {
+      const reportType = document.getElementById('reportType').value;
+      const reportDateStartInput = document.getElementById('reportDateStart').value;
+      const reportDateEndInput = document.getElementById('reportDateEnd').value;
+      const reportResults = document.getElementById('reportResults');
+      const salesChartCanvas = document.getElementById('salesChart');
+      reportResults.innerHTML = ''; // Limpiar resultados anteriores
+      if (productChart) {
+           productChart.destroy(); // Destruir gráfica anterior si existe
+           productChart = null;
+      }
+      salesChartCanvas.style.display = 'none'; // Ocultar canvas por defecto
+
+       let startDate, endDate;
+       const now = new Date();
+       now.setHours(0, 0, 0, 0); // Normalizar a inicio del día
+
+       try {
+           switch (reportType) {
+               case 'day':
+                   if (!reportDateStartInput) throw new Error("Selecciona una fecha.");
+                   startDate = new Date(reportDateStartInput + 'T00:00:00'); // Asegurar zona horaria local
+                   if (isNaN(startDate)) throw new Error("Fecha inválida.");
+                   endDate = new Date(startDate);
+                   endDate.setHours(23, 59, 59, 999); // Final del día seleccionado
+                   break;
+               case 'range':
+                   if (!reportDateStartInput || !reportDateEndInput) throw new Error("Selecciona fecha de inicio y fin.");
+                   startDate = new Date(reportDateStartInput + 'T00:00:00');
+                   endDate = new Date(reportDateEndInput + 'T23:59:59.999');
+                   if (isNaN(startDate) || isNaN(endDate)) throw new Error("Fechas inválidas.");
+                    if (startDate > endDate) throw new Error("La fecha de inicio no puede ser posterior a la fecha de fin.");
+                   break;
+               case 'week':
+                   startDate = new Date(now);
+                   // Ajuste para que la semana empiece en Lunes (getDay()=1) y termine en Domingo (getDay()=0)
+                   const dayOfWeek = now.getDay(); // 0=Dom, 1=Lun, ..., 6=Sab
+                   const diff = now.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1); // Ajuste para Lunes
+                   startDate = new Date(now.setDate(diff));
+                   startDate.setHours(0,0,0,0);
+
+                   endDate = new Date(startDate);
+                   endDate.setDate(startDate.getDate() + 6); // Domingo de la semana actual
+                   endDate.setHours(23,59,59,999);
+                   // Restaurar 'now' a hoy por si acaso
+                   now.setTime(new Date().getTime());
+                   now.setHours(0, 0, 0, 0);
+
+                   break;
+               case 'month':
+                   startDate = new Date(now.getFullYear(), now.getMonth(), 1); // Primer día del mes actual
+                   endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0); // Último día del mes actual
+                    endDate.setHours(23,59,59,999);
+                   break;
+               case 'year':
+                   startDate = new Date(now.getFullYear(), 0, 1); // 1 de Enero del año actual
+                   endDate = new Date(now.getFullYear(), 11, 31); // 31 de Diciembre del año actual
+                    endDate.setHours(23,59,59,999);
+                   break;
+                case 'products':
+                    // Manejo especial para reporte de productos
+                     generateProductReport(reportResults);
+                     return; // Salir de la función principal aquí
+                 default:
+                     throw new Error("Tipo de reporte no válido.");
+           }
+       } catch (error) {
+           reportResults.innerHTML = `<p style="color: red; text-align: center;">Error: ${error.message}</p>`;
+           return;
+       }
+
+        // Filtrar pedidos pagados dentro del rango de fechas
+        const filteredOrders = orders.filter(order => {
+            if (order.status !== ORDER_STATUS.PAGADO || !order.orderTime) return false;
+             try {
+                const orderDate = new Date(order.orderTime);
+                 return !isNaN(orderDate) && orderDate >= startDate && orderDate <= endDate;
+             } catch(e) { return false; } // Ignorar si la fecha es inválida
+        });
+
+        // Cálculos financieros
+        const totalSales = filteredOrders.reduce((sum, order) => sum + (order.finalTotal || order.total || 0), 0); // Usa finalTotal si existe
+        const totalTips = filteredOrders.reduce((sum, order) => sum + (order.tip || 0), 0);
+        const expenses = parseFloat(document.getElementById('dailyExpenses').value) || 0;
+        const netProfit = totalSales - expenses; // Utilidad bruta (sin considerar costo de producto)
+
+        // Generar HTML del reporte financiero
+        let reportHTML = `
+            <h3>Reporte Financiero (${reportType === 'day' ? startDate.toLocaleDateString() : startDate.toLocaleDateString() + ' - ' + endDate.toLocaleDateString()})</h3>
+            <p>Total de Ventas (post-desc, incl. propinas): $${totalSales.toFixed(2)}</p>
+            <p>Total de Propinas: $${totalTips.toFixed(2)}</p>
+            <p>Gastos Registrados: $${expenses.toFixed(2)}</p>
+            <p style="font-weight: bold;">Utilidad Neta (Ventas - Gastos): $${netProfit.toFixed(2)}</p>
+            <hr>
+            <h4>Detalle de Pedidos Pagados (${filteredOrders.length})</h4>
+        `;
+
+        if (filteredOrders.length > 0) {
+             reportHTML += '<table><thead><tr><th># Pedido</th><th>Mesa</th><th>Mesero</th><th>Fecha</th><th>Desc (%)</th><th>Propina ($)</th><th>Total Pagado ($)</th></tr></thead><tbody>';
+             filteredOrders.sort((a, b) => new Date(a.orderTime) - new Date(b.orderTime)) // Ordenar por fecha ascendente
+                 .forEach(order => {
+                 reportHTML += `
+                    <tr>
+                        <td>${order.number}</td>
+                        <td>${order.table}</td>
+                        <td>${order.waiter}</td>
+                        <td>${new Date(order.orderTime).toLocaleString()}</td>
+                        <td>${(order.discountPercentage || 0).toFixed(1)}%</td>
+                        <td>$${(order.tip || 0).toFixed(2)}</td>
+                        <td>$${(order.finalTotal || order.total).toFixed(2)}</td>
+                    </tr>`;
+             });
+             reportHTML += '</tbody></table>';
+        } else {
+            reportHTML += '<p style="text-align: center; color: #777;">No se encontraron pedidos pagados en este periodo.</p>';
+        }
+
+        reportResults.innerHTML = reportHTML;
+
+        // Generar tabla de platillos vendidos en el periodo
+        generateProductTableForPeriod(filteredOrders, reportResults);
+    }
+
+    // Función específica para reporte de productos (todos los tiempos)
+    function generateProductReport(container) {
+        const productCounts = {}; // { productName: { count: 0, totalValue: 0 } }
+        const paidOrders = orders.filter(o => o.status === ORDER_STATUS.PAGADO);
+
+        paidOrders.forEach(order => {
+            order.items.forEach(item => {
+                if (!productCounts[item.name]) {
+                    productCounts[item.name] = { count: 0, totalValue: 0 };
+                }
+                productCounts[item.name].count += item.quantity;
+                productCounts[item.name].totalValue += item.quantity * item.price;
+            });
+        });
+
+        const topDishesCount = parseInt(document.getElementById('topDishesCount').value);
+        const dishesArray = Object.entries(productCounts)
+            .map(([name, data]) => ({ name, count: data.count, totalValue: data.totalValue }))
+            .sort((a, b) => b.count - a.count); // Ordenar por cantidad descendente
+
+        const topDishesNames = dishesArray.slice(0, topDishesCount).map(d => d.name);
+
+        let reportHTML = '<h3>Productos Más Vendidos (Historial Completo)</h3>';
+        if (dishesArray.length > 0) {
+            reportHTML += '<table><thead><tr><th>Producto</th><th>Cantidad Vendida</th><th>Valor Total ($)</th></tr></thead><tbody>';
+            dishesArray.forEach(dish => {
+                const isHighlighted = topDishesNames.includes(dish.name);
+                reportHTML += `<tr class="${isHighlighted ? 'highlighted' : ''}">
+                                 <td>${dish.name}</td>
+                                 <td>${dish.count}</td>
+                                 <td>$${dish.totalValue.toFixed(2)}</td>
+                               </tr>`;
+            });
+            reportHTML += '</tbody></table>';
+        } else {
+             reportHTML += '<p style="text-align: center; color: #777;">No hay datos de ventas de productos.</p>';
+        }
+        container.innerHTML = reportHTML;
+    }
+
+     // Genera la tabla de productos para un periodo específico (usado en reportes de día, rango, etc.)
+    function generateProductTableForPeriod(filteredOrders, container) {
+        const productCounts = {}; // { productName: { count: 0, totalValue: 0 } }
+
+        filteredOrders.forEach(order => {
+            order.items.forEach(item => {
+                if (!productCounts[item.name]) {
+                    productCounts[item.name] = { count: 0, totalValue: 0 };
+                }
+                productCounts[item.name].count += item.quantity;
+                productCounts[item.name].totalValue += item.quantity * item.price;
+            });
+        });
+
+        const topDishesCount = parseInt(document.getElementById('topDishesCount').value);
+        const dishesArray = Object.entries(productCounts)
+            .map(([name, data]) => ({ name, count: data.count, totalValue: data.totalValue }))
+            .sort((a, b) => b.count - a.count); // Ordenar por cantidad descendente
+
+        const topDishesNames = dishesArray.slice(0, topDishesCount).map(d => d.name);
+
+        let dishesHTML = '<hr><h4>Total de Productos Vendidos en el Periodo</h4>';
+        if (dishesArray.length > 0) {
+            dishesHTML += '<table><thead><tr><th>Producto</th><th>Cantidad</th><th>Valor ($)</th></tr></thead><tbody>';
+             dishesArray.forEach(dish => {
+                const isHighlighted = topDishesNames.includes(dish.name);
+                dishesHTML += `<tr class="${isHighlighted ? 'highlighted' : ''}">
+                                  <td>${dish.name}</td>
+                                  <td>${dish.count}</td>
+                                  <td>$${dish.totalValue.toFixed(2)}</td>
+                               </tr>`;
+            });
+            dishesHTML += '</tbody></table>';
+        } else {
+            dishesHTML += '<p style="text-align: center; color: #777;">No se vendieron productos en este periodo.</p>';
+        }
+        container.innerHTML += dishesHTML; // Añadir al contenido existente
+    }
+
+
+    // Función para mostrar la gráfica de ventas de productos (historial completo)
+    function showSalesChart() {
+      const salesChartCanvas = document.getElementById('salesChart');
+       const reportResults = document.getElementById('reportResults');
+       reportResults.innerHTML = ''; // Limpiar la tabla de reportes
+
+       if (productChart) {
+            productChart.destroy(); // Destruir instancia anterior si existe
+            productChart = null;
+        }
+
+      const productCounts = {}; // { name: count }
+      const paidOrders = orders.filter(o => o.status === ORDER_STATUS.PAGADO);
+
+      paidOrders.forEach(order => {
+        order.items.forEach(item => {
+          productCounts[item.name] = (productCounts[item.name] || 0) + item.quantity;
+        });
+      });
+
+      // Ordenar productos por cantidad vendida (descendente) para la gráfica
+       const sortedProducts = Object.entries(productCounts)
+                                  .sort(([, countA], [, countB]) => countB - countA);
+                                  // .slice(0, 15); // Opcional: Limitar a los N más vendidos
+
+        if (sortedProducts.length === 0) {
+             reportResults.innerHTML = '<p style="text-align: center; color: #777;">No hay datos de ventas para mostrar en la gráfica.</p>';
+             salesChartCanvas.style.display = 'none';
+             return;
+         }
+
+      const productNames = sortedProducts.map(([name]) => name);
+      const productQuantities = sortedProducts.map(([, count]) => count);
+
+      salesChartCanvas.style.display = 'block'; // Mostrar el canvas
+      const ctx = salesChartCanvas.getContext('2d');
+      productChart = new Chart(ctx, {
+        type: 'bar', // o 'pie', 'doughnut'
+        data: {
+          labels: productNames,
+          datasets: [{
+            label: 'Cantidad Vendida (Historial)',
+            data: productQuantities,
+            backgroundColor: 'rgba(26, 188, 156, 0.6)', // Color turquesa con transparencia
+            borderColor: 'rgba(26, 188, 156, 1)',
+            borderWidth: 1
+          }]
+        },
+        options: {
+           responsive: true,
+           maintainAspectRatio: true,
+           indexAxis: sortedProducts.length > 10 ? 'y' : 'x', // Barras horizontales si hay muchos items
+           scales: {
+             x: { beginAtZero: true, title: { display: true, text: 'Cantidad Vendida' } },
+             y: { title: { display: true, text: 'Producto' } }
+           },
+           plugins: {
+                legend: { display: false }, // Ocultar leyenda si solo hay un dataset
+                title: { display: true, text: 'Productos Más Vendidos (Historial Completo)' }
+           }
+        }
+      });
+    }
+
+    // --- Exportar/Importar Ventas (Excel) ---
+    // Cabeceras esperadas para importación de ventas (case-insensitive)
+    const salesImportHeaders = {
+        'id pedido': 'number',
+        'mesa': 'table',
+        'mesero': 'waiter',
+        'fecha hora': 'orderTime',
+        'estado': 'status',
+        'items': 'items', // Se parseará de forma simple o se ignorará
+        'subtotal ($)': 'total',
+        'descuento (%)': 'discountPercentage',
+        'propina ($)': 'tip',
+        'total pagado ($)': 'finalTotal'
+    };
+
+    function exportOrders() {
+        if (orders.length === 0) {
+            alert("No hay pedidos registrados para exportar.");
+            return;
+        }
+        showLoading(true);
+      // Usar cabeceras consistentes para exportar
+      const exportData = orders.map(order => ({
+        'ID Pedido': order.number,
+        'Mesa': order.table,
+        'Mesero': order.waiter,
+        'Fecha Hora': order.orderTime ? new Date(order.orderTime).toLocaleString() : 'N/A', // Formato legible
+        'Estado': order.status,
+        'Items': order.items.map(item => `${item.quantity}x ${item.name} ($${item.price.toFixed(2)})${item.specialInstructions ? ' [' + item.specialInstructions + ']' : ''} (${item.status})`).join('; '), // Separador claro + status
+        'Subtotal ($)': (order.total || 0).toFixed(2),
+        'Descuento (%)': (order.discountPercentage || 0).toFixed(1),
+        'Propina ($)': (order.tip || 0).toFixed(2),
+        'Total Pagado ($)': (order.finalTotal || order.total || 0).toFixed(2) // Usar finalTotal si existe
+      }));
+
+      const worksheet = XLSX.utils.json_to_sheet(exportData);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "ReporteVentas");
+
+       worksheet['!cols'] = [
+           { wch: 10 }, { wch: 8 }, { wch: 15 }, { wch: 20 }, { wch: 15 },
+           { wch: 70 }, { wch: 12 }, { wch: 12 }, { wch: 12 }, { wch: 15 }
+       ];
+
+      try {
+          XLSX.writeFile(workbook, "Reporte_Ventas_Restaurante.xlsx");
+          console.log("Reporte de ventas exportado a Excel.");
+          showLoading(false);
+           alert("Reporte de ventas exportado exitosamente a 'Reporte_Ventas_Restaurante.xlsx'");
+      } catch (error) {
+          console.error("Error al exportar reporte de ventas:", error);
+          showLoading(false);
+          alert("Hubo un error al generar el archivo Excel del reporte.");
+      }
+    }
+
+    function downloadSalesLayout() {
+        const layoutData = [
+            {
+                'ID Pedido': 1001,
+                'Mesa': 5,
+                'Mesero': "Juan",
+                'Fecha Hora': new Date().toLocaleString(),
+                'Estado': "Pagado", // Usar estados válidos: Pendiente, En preparación, Listo, Servido, Pagado, Cancelado
+                'Items': "2x Tacos al Pastor ($90.00) [Sin cebolla] (Servido); 1x Agua Horchata ($25.00) (Servido)", // Formato ejemplo
+                'Subtotal ($)': 115.00,
+                'Descuento (%)': 10.0,
+                'Propina ($)': 10.35,
+                'Total Pagado ($)': 113.85
+            }
+        ];
+
+        const worksheet = XLSX.utils.json_to_sheet(layoutData);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "LayoutVentas");
+        worksheet['!cols'] = [
+           { wch: 10 }, { wch: 8 }, { wch: 15 }, { wch: 20 }, { wch: 15 },
+           { wch: 70 }, { wch: 12 }, { wch: 12 }, { wch: 12 }, { wch: 15 }
+        ];
+        try {
+            XLSX.writeFile(workbook, "Layout_Ventas_Ejemplo.xlsx");
+        } catch (error) {
+            console.error("Error al generar layout de ventas:", error);
+            alert("Hubo un error al generar el archivo de ejemplo de ventas.");
+        }
+    }
+
+
+    function importSales() {
+        const input = document.getElementById('importSalesFile');
+        const file = input.files[0];
+
+        if (!file) {
+            alert("Por favor, selecciona un archivo Excel (.xlsx o .xls) de ventas.");
+            return;
+        }
+        showLoading(true);
+
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            try {
+                const data = new Uint8Array(event.target.result);
+                const workbook = XLSX.read(data, { type: "array", cellDates: true }); // Intentar parsear fechas
+                const sheetName = workbook.SheetNames[0];
+                const sheet = workbook.Sheets[sheetName];
+                // Obtener cabeceras reales para mapeo flexible
+                const sheetHeaders = XLSX.utils.sheet_to_json(sheet, { header: 1 })[0] || [];
+                const headerMap = {};
+                 sheetHeaders.forEach(header => {
+                     const lowerHeader = sanitizeString(header);
+                     const propName = salesImportHeaders[lowerHeader];
+                      if (propName) {
+                         headerMap[header] = propName; // Mapear cabecera original a propiedad JS
+                      }
+                 });
+
+
+                // Validar que las cabeceras esenciales están presentes
+                const essentialProps = ['number', 'table', 'waiter', 'orderTime', 'status', 'total', 'finalTotal'];
+                 const presentProps = Object.values(headerMap);
+                 const missingEssential = essentialProps.filter(ep => !presentProps.includes(ep));
+
+                if(missingEssential.length > 0) {
+                    showLoading(false);
+                     alert(`Faltan cabeceras esenciales en el archivo de ventas (o no coinciden con el layout): ${missingEssential.join(', ')}`);
+                     return;
+                }
+
+
+                const importedData = XLSX.utils.sheet_to_json(sheet, { raw: false }); // raw:false para mejor parseo
+
+                if (importedData.length === 0) {
+                     showLoading(false);
+                     alert("El archivo de ventas seleccionado está vacío o no tiene datos en la primera hoja.");
+                     return;
+                }
+
+                let addedCount = 0;
+                let updatedCount = 0;
+                let skippedCount = 0;
+                const errors = [];
+
+                importedData.forEach((row, rowIndex) => {
+                    const orderData = {};
+                    let validRow = true;
+                    let rowError = `Fila Venta ${rowIndex + 2}: `;
+
+                    // Mapear datos usando el mapa de cabeceras
+                    Object.keys(row).forEach(header => {
+                        const propName = headerMap[header];
+                        if(propName) {
+                            orderData[propName] = row[header];
+                        }
+                    });
+
+                    // Validaciones y parseo de tipos
+                    orderData.number = parseInt(orderData.number);
+                    orderData.table = parseInt(orderData.table);
+                    orderData.waiter = orderData.waiter?.toString().trim();
+                    orderData.status = orderData.status?.toString().trim();
+                    // Items string se mantiene como string por ahora
+                    orderData.itemsString = orderData.items?.toString().trim(); // Guardar el string original
+                    orderData.total = parseFloat(orderData.total);
+                    orderData.discountPercentage = parseFloat(orderData.discountPercentage || 0);
+                    orderData.tip = parseFloat(orderData.tip || 0);
+                    orderData.finalTotal = parseFloat(orderData.finalTotal);
+
+                    // Intentar parsear la fecha/hora
+                    try {
+                       if (orderData.orderTime instanceof Date && !isNaN(orderData.orderTime)) {
+                           orderData.orderTime = orderData.orderTime.toISOString();
+                       } else {
+                           // Si no es Date, intentar parsear como string
+                           const parsedDate = new Date(orderData.orderTime);
+                           if (!isNaN(parsedDate)) {
+                               orderData.orderTime = parsedDate.toISOString();
+                           } else {
+                               throw new Error("Formato de fecha inválido");
+                           }
+                       }
+                    } catch (e) {
+                        validRow = false; rowError += "Fecha Hora inválida. ";
+                        orderData.orderTime = null; // Marcar como nulo si falla
+                    }
+
+                     // Validar datos parseados
+                    if (isNaN(orderData.number)) { validRow = false; rowError += "ID Pedido inválido. "; }
+                    if (isNaN(orderData.table)) { validRow = false; rowError += "Mesa inválida. "; }
+                    if (!orderData.waiter) { validRow = false; rowError += "Falta Mesero. "; }
+                    // Validar estado contra los estados permitidos
+                    if (!orderData.status || !Object.values(ORDER_STATUS).includes(orderData.status)) { validRow = false; rowError += "Estado inválido. "; }
+                    if (isNaN(orderData.total)) { validRow = false; rowError += "Subtotal inválido. "; }
+                    if (isNaN(orderData.discountPercentage) || orderData.discountPercentage < 0 || orderData.discountPercentage > 100 ) { validRow = false; rowError += "Descuento inválido. "; }
+                    if (isNaN(orderData.tip) || orderData.tip < 0) { validRow = false; rowError += "Propina inválida. "; }
+                    if (isNaN(orderData.finalTotal)) { validRow = false; rowError += "Total Pagado inválido. "; }
+
+
+                    if (!validRow) {
+                         console.warn(rowError, row);
+                         errors.push(rowError);
+                         skippedCount++;
+                         return; // Saltar fila
+                    }
+
+                    // Parsear items (Simplificado: solo los toma si la orden es nueva)
+                    // Para actualizar, sería muy complejo y propenso a errores sin IDs únicos por item.
+                    orderData.items = []; // Dejar vacío por defecto al importar
+                    if (orderData.itemsString && orderData.status !== ORDER_STATUS.PAGADO && orderData.status !== ORDER_STATUS.CANCELADO) { // Solo intentar parsear si no está finalizado
+                       try {
+                          orderData.items = orderData.itemsString.split(';').map(itemStr => {
+                              // Lógica de parseo MUY BÁSICA (puede fallar fácilmente)
+                              const matchQtyName = itemStr.match(/(\d+)\s*x\s*(.*?)(?=\s*\(\$|\s*\[)/); // Cantidad y Nombre
+                              const matchPrice = itemStr.match(/\(\$(.*?)\)/); // Precio
+                              const matchInstr = itemStr.match(/\[(.*?)\]/); // Instrucciones
+                              const matchStatus = itemStr.match(/\((Pendiente|En preparación|Listo|Servido)\)$/); // Status al final
+
+                              if (matchQtyName && matchPrice) {
+                                  const name = matchQtyName[2].trim();
+                                  // Buscar item en el menú actual para obtener categoría y tiempo prep.
+                                  const menuItem = menu.find(m => sanitizeString(m.name) === sanitizeString(name));
+                                  return {
+                                      quantity: parseInt(matchQtyName[1]),
+                                      name: name,
+                                      price: parseFloat(matchPrice[1]),
+                                      category: menuItem?.category || 'Importada', // Categoría por defecto
+                                      preparationTime: menuItem?.preparationTime || 0, // Tiempo por defecto
+                                      specialInstructions: matchInstr ? matchInstr[1].trim() : '',
+                                      status: matchStatus ? matchStatus[1] : (orderData.status === ORDER_STATUS.PAGADO ? ORDER_STATUS.SERVIDO : ORDER_STATUS.PENDIENTE) // Asumir estado basado en orden o Pendiente
+                                  };
+                              }
+                              return null;
+                          }).filter(item => item !== null);
+                       } catch (e) {
+                           console.warn(`Fila Venta ${rowIndex + 2}: Error parseando items: ${e.message}. Se importará sin items.`);
+                           orderData.items = [];
+                       }
+                    }
+
+
+                    // Buscar si la orden ya existe por ID
+                    const existingOrderIndex = orders.findIndex(o => o.number === orderData.number);
+
+                    // Crear objeto final limpio
+                    const finalOrderObject = {
+                         number: orderData.number,
+                         table: orderData.table,
+                         waiter: orderData.waiter,
+                         orderTime: orderData.orderTime,
+                         status: orderData.status,
+                         items: [], // Inicialmente vacío
+                         total: orderData.total,
+                         discountPercentage: orderData.discountPercentage,
+                         tip: orderData.tip,
+                         finalTotal: orderData.finalTotal,
+                         paymentTime: orderData.status === ORDER_STATUS.PAGADO ? (orderData.paymentTime || new Date().toISOString()) : null // Añadir hora pago si está pagado
+                     };
+
+                    if (existingOrderIndex !== -1) {
+                         // Actualizar orden existente: Merge simple, priorizando datos importados excepto items
+                          finalOrderObject.items = orders[existingOrderIndex].items; // Mantener items existentes
+                          orders[existingOrderIndex] = finalOrderObject;
+                         updatedCount++;
+                    } else {
+                        // Agregar nueva orden (aquí sí usamos los items parseados si existen)
+                         finalOrderObject.items = orderData.items;
+                        orders.push(finalOrderObject);
+                        addedCount++;
+                        // Actualizar orderNumber si el importado es mayor
+                        if (orderData.number >= orderNumber) {
+                             orderNumber = orderData.number + 1;
+                        }
+                    }
+                });
+
+                 // Actualizar UI y guardar
+                 renderTables(); // Estados de mesa pueden cambiar
+                 saveData();
+                 showLoading(false);
+
+                  let resultMessage = `Importación de ventas completada:\n- ${addedCount} ventas agregadas.\n- ${updatedCount} ventas actualizadas.\n- ${skippedCount} filas ignoradas.`;
+                  if (errors.length > 0) {
+                       console.error("Errores durante la importación de ventas:", errors);
+                       resultMessage += `\n\nSe encontraron errores en ${errors.length} filas (ver consola para detalles).`;
+                  }
+                  alert(resultMessage);
+
+
+            } catch (error) {
+                console.error("Error al importar ventas:", error);
+                showLoading(false);
+                alert("Error al procesar el archivo Excel de ventas. Verifica el formato, las cabeceras y el contenido.");
+            } finally {
+                input.value = ''; // Limpiar input
+            }
+        };
+        reader.onerror = function() {
+             showLoading(false);
+             alert("Error al leer el archivo de ventas seleccionado.");
+             input.value = '';
+         };
+        reader.readAsArrayBuffer(file);
+    }
+
+    // --- Procesamiento de Pago ---
+    function showPaymentModal(orderNum) {
+      const order = orders.find(o => o.number === orderNum);
+      if (!order || order.status === ORDER_STATUS.PAGADO || order.status === ORDER_STATUS.CANCELADO) {
+          alert("El pedido no existe, ya fue pagado o cancelado.");
+          return;
+      }
+
+      const paymentDetails = document.getElementById('paymentDetails');
+      paymentDetails.innerHTML = `
+        <p><strong>Pedido #${order.number}</strong> (Mesa ${order.table})</p>
+        <p>Mesero: ${order.waiter}</p>
+        <p style="font-size: 1.1rem;">Subtotal: $${order.total.toFixed(2)}</p>
+      `;
+      // Guardar datos necesarios en el modal
+      paymentDetails.dataset.orderNumber = order.number;
+      paymentDetails.dataset.subtotal = order.total; // Guardar subtotal original
+
+      // Resetear campos del modal
+      document.getElementById('splitBetween').value = 1;
+      document.getElementById('splitDetails').innerHTML = '';
+      document.getElementById('tipAmount').value = '';
+      document.getElementById('discountPercentage').value = order.discountPercentage || ''; // Usar descuento si ya existía
+      document.getElementById('amountPaid').value = '';
+      document.getElementById('change').textContent = '0.00';
+      document.getElementById('change').style.color = ''; // Reset color
+       document.getElementById('amountPaid').classList.remove('invalid'); // Reset validation visual
+
+
+      // Calcular total inicial (considerando descuento pre-existente si lo hay)
+      calculateTotalWithModifiers();
+
+      document.getElementById('paymentModal').style.display = 'block';
+       document.getElementById('amountPaid').focus(); // Poner foco en cantidad pagada
+    }
+
+    function calculateTotalWithModifiers() {
+        const subtotal = parseFloat(document.getElementById('paymentDetails').dataset.subtotal || 0);
+        const tipInput = document.getElementById('tipAmount');
+        const discountInput = document.getElementById('discountPercentage');
+
+        const tip = parseFloat(tipInput.value) || 0;
+        const discountPercent = parseFloat(discountInput.value) || 0;
+
+        // Validación visual simple
+        tipInput.classList.toggle('invalid', tip < 0);
+        discountInput.classList.toggle('invalid', discountPercent < 0 || discountPercent > 100);
+
+        if (tip < 0 || discountPercent < 0 || discountPercent > 100) {
+             document.getElementById('finalTotal').textContent = '---'; // Indicar error
+            return; // No calcular si hay error
+         }
+
+
+        const discountAmount = subtotal * (discountPercent / 100);
+        const totalAfterDiscount = subtotal - discountAmount;
+        const finalTotal = totalAfterDiscount + tip;
+
+        document.getElementById('finalTotal').textContent = finalTotal.toFixed(2);
+
+        // Actualizar cálculo de división si existe
+        if (parseInt(document.getElementById('splitBetween').value) > 1) {
+            calculateSplit();
+        }
+         // Recalcular cambio si ya se ingresó un monto pagado
+         calculateChange();
+    }
+
+    function calculateSplit() {
+      const finalTotal = parseFloat(document.getElementById('finalTotal').textContent || 0);
+       const splitInput = document.getElementById('splitBetween');
+       const splitBetween = parseInt(splitInput.value);
+
+      if (isNaN(finalTotal) || finalTotal <= 0) {
+           document.getElementById('splitDetails').innerHTML = '';
+           return;
+      }
+
+
+       if (isNaN(splitBetween) || splitBetween < 1) {
+           splitInput.classList.add('invalid');
+           document.getElementById('splitDetails').innerHTML = '<span style="color:red;">Número inválido.</span>';
+           return;
+       }
+        splitInput.classList.remove('invalid');
+
+
+        if (splitBetween === 1) {
+            document.getElementById('splitDetails').innerHTML = ''; // No mostrar nada si es 1 persona
+            return;
+        }
+
+      const amountPerPerson = finalTotal / splitBetween;
+      document.getElementById('splitDetails').innerHTML = `Cada una de las ${splitBetween} personas paga: <strong>$${amountPerPerson.toFixed(2)}</strong>`;
+    }
+
+
+    function calculateChange() {
+       const finalTotal = parseFloat(document.getElementById('finalTotal').textContent || 0);
+       const amountPaidInput = document.getElementById('amountPaid');
+       const amountPaid = parseFloat(amountPaidInput.value);
+       const changeDisplay = document.getElementById('change');
+
+        // Reset visual
+        changeDisplay.style.color = '';
+        amountPaidInput.classList.remove('invalid');
+
+       if (isNaN(finalTotal) || finalTotal < 0) {
+           changeDisplay.textContent = '0.00'; // No se puede calcular cambio sin total válido
+           return;
+       }
+
+       if (isNaN(amountPaid) || amountPaid < 0) {
+            changeDisplay.textContent = '0.00'; // Si no se ha pagado o es inválido, cambio es 0
+           return;
+       }
+
+
+        const change = amountPaid - finalTotal;
+
+        if (change < 0) {
+             changeDisplay.textContent = `Faltan $${Math.abs(change).toFixed(2)}`;
+             changeDisplay.style.color = 'red';
+              amountPaidInput.classList.add('invalid'); // Marcar que falta dinero
+        } else {
+            changeDisplay.textContent = change.toFixed(2);
+            changeDisplay.style.color = 'green'; // O el color por defecto
+        }
+    }
+
+    function processPayment() {
+      const orderNumber = parseInt(document.getElementById('paymentDetails').dataset.orderNumber);
+      const finalTotal = parseFloat(document.getElementById('finalTotal').textContent || -1); // Usar -1 para detectar error en total
+      const amountPaidInput = document.getElementById('amountPaid');
+      const amountPaid = parseFloat(amountPaidInput.value);
+      const tipInput = document.getElementById('tipAmount');
+      const discountInput = document.getElementById('discountPercentage');
+      const tip = parseFloat(tipInput.value) || 0;
+      const discountPercentage = parseFloat(discountInput.value) || 0;
+
+       // Validaciones finales
+        if (finalTotal < 0 || tip < 0 || discountPercentage < 0 || discountPercentage > 100) {
+             alert('Hay errores en los montos de propina o descuento. Por favor, corrígelos.');
+             // Poner foco en el primer input inválido
+             if (discountInput.classList.contains('invalid')) discountInput.focus();
+             else if (tipInput.classList.contains('invalid')) tipInput.focus();
+             return;
+         }
+
+        if (isNaN(amountPaid)) {
+             validateInput(amountPaidInput, val => !isNaN(parseFloat(val)), 'Ingresa la cantidad pagada por el cliente.');
+             return;
+        }
+        if (amountPaid < finalTotal) {
+             alert(`La cantidad pagada ($${amountPaid.toFixed(2)}) es insuficiente para cubrir el total ($${finalTotal.toFixed(2)}). Faltan $${(finalTotal - amountPaid).toFixed(2)}.`);
+             amountPaidInput.classList.add('invalid');
+             amountPaidInput.focus();
+             return;
+         }
+         amountPaidInput.classList.remove('invalid'); // Quitar marca si es suficiente
+
+
+      const orderIndex = orders.findIndex(o => o.number === orderNumber);
+      if (orderIndex === -1) {
+          alert("Error: No se encontró el pedido para procesar el pago.");
+          closeModal('paymentModal');
+          return;
+      }
+
+      // Actualizar datos del pedido
+      orders[orderIndex].status = ORDER_STATUS.PAGADO;
+      orders[orderIndex].tip = tip;
+      orders[orderIndex].discountPercentage = discountPercentage;
+      orders[orderIndex].finalTotal = finalTotal; // Guardar el total final calculado
+       orders[orderIndex].paymentTime = new Date().toISOString(); // Registrar hora del pago
+
+       // Marcar todos los items como 'Servido' si no lo estaban ya (asume que si se paga, se entregó todo)
+        orders[orderIndex].items.forEach(item => {
+             if (item.status !== ORDER_STATUS.SERVIDO) {
+                 item.status = ORDER_STATUS.SERVIDO;
+             }
+         });
+
+
+      // Liberar la mesa
+      const table = tables.find(t => t.number === orders[orderIndex].table);
+      if (table) {
+        table.status = TABLE_STATUS.LIBRE;
+        table.orderNumber = null;
+        table.orderTime = null;
+        table.waiter = null;
+         table.elapsedTime = null;
+      }
+
+      saveData(); // Guardar cambios
+      alert('Pago procesado con éxito.');
+
+      // Limpiar estado de la sección de pedidos si la mesa actual era la pagada
+       if (currentTable === orders[orderIndex].table) {
+           currentOrder = [];
+           currentEditingOrder = null;
+           currentTable = null; // Deseleccionar mesa
+            document.getElementById('selectedTable').textContent = '';
+            document.getElementById('waiterSelect').value = '';
+            document.getElementById('waiterSelect').disabled = false;
+           updateOrderSummary();
+            disableOrderButtons(true, true, true); // Deshabilitar botones
+            updatePedidosTabState(); // Deshabilitar tab de pedidos
+       }
+
+
+      closeModal('paymentModal');
+      renderTables(); // Actualizar vista de mesas
+
+      // Mostrar modal de ticket después de cerrar el de pago
+      showTicketModal(orderNumber);
+    }
+
+    // --- Ticket (PDF y Modal) ---
+    function showTicketModal(orderNum) {
+      const order = orders.find(o => o.number === orderNum);
+      if (!order) {
+           console.error("No se encontró el pedido para generar ticket:", orderNum);
+           return;
+      }
+
+      const ticketContentElement = document.getElementById('ticketContent');
+      ticketContentElement.innerHTML = generateTicketHTML(order); // Generar contenido HTML/texto
+
+       // Guardar el número de orden en el modal del ticket para referencia del PDF
+       ticketContentElement.dataset.orderNumber = orderNum;
+
+      document.getElementById('ticketModal').style.display = 'block';
+    }
+
+     // Genera el contenido HTML/texto plano para el ticket
+    function generateTicketHTML(order) {
+        if (!order) return "<p>Error al cargar datos del pedido.</p>";
+
+        const discountAmount = (order.total * (order.discountPercentage || 0) / 100);
+        const subTotalAfterDiscount = order.total - discountAmount;
+
+        // Usar padEnd para alinear precios a la derecha (ajustar el número según ancho deseado)
+        const itemWidth = 22; // Ancho para Cantidad y Nombre
+        const priceWidth = 10; // Ancho para Precio
+
+        let itemsListText = order.items.map(item => {
+             const namePart = `${item.quantity} ${item.name}`;
+             const pricePart = `$${(item.price * item.quantity).toFixed(2)}`;
+             let line = namePart.padEnd(itemWidth).substring(0, itemWidth) + pricePart.padStart(priceWidth);
+              if(item.specialInstructions) {
+                  line += `\n  *Inst: ${item.specialInstructions}`; // Instrucciones en línea aparte
+              }
+             return line;
+        }).join('\n');
+
+        // Generar texto del ticket
+        return `
+****************************************
+       JAVI'S COATEPEC
+****************************************
+Pedido #: ${order.number}     Mesa: ${order.table}
+Fecha: ${new Date(order.orderTime || Date.now()).toLocaleString()}
+Mesero: ${order.waiter || 'N/A'}
+----------------------------------------
+Cant Producto           Importe
+----------------------------------------
+${itemsListText}
+----------------------------------------
+Subtotal:              ${`$${order.total.toFixed(2)}`.padStart(priceWidth)}
+${(order.discountPercentage || 0) > 0 ? `Desc.(${order.discountPercentage.toFixed(1)}%):      ${`-$${discountAmount.toFixed(2)}`.padStart(priceWidth)}` : ''}
+${(order.discountPercentage || 0) > 0 ? `Subtotal c/Desc:     ${`$${subTotalAfterDiscount.toFixed(2)}`.padStart(priceWidth)}` : ''}
+Propina:               ${`$${(order.tip || 0).toFixed(2)}`.padStart(priceWidth)}
+========================================
+TOTAL A PAGAR:         ${`$${(order.finalTotal || order.total).toFixed(2)}`.padStart(priceWidth)}
+========================================
+${order.paymentTime ? `Pagado: ${new Date(order.paymentTime).toLocaleString()}` : ''}
+
+        ¡Gracias por tu visita!
+      `;
+    }
+
+
+    function generateAndPrintTicketPDF() {
+        // Obtener el número de pedido del modal del ticket
+        const ticketContentElement = document.getElementById('ticketContent');
+        const orderNumber = parseInt(ticketContentElement?.dataset?.orderNumber);
+
+        if (isNaN(orderNumber)) {
+            alert("No se pudo identificar el número de pedido para generar el PDF.");
+            return;
+        }
+        const order = orders.find(o => o.number === orderNumber);
+        if (!order) {
+             alert(`No se encontró el pedido #${orderNumber} para generar el PDF.`);
+            return;
+        }
+         showLoading(true);
+
+         try {
+             const doc = new jsPDF({
+                 orientation: 'p', // portrait
+                 unit: 'mm',
+                 format: [80, 200] // Formato ticketera común (ancho 80mm, largo variable)
+             });
+             const margin = 5;
+             let y = margin;
+             const lineHeight = 4.5; // Espacio entre líneas reducido para ticket
+             const lineWidth = 70; // Ancho útil dentro del margen (80mm - 2*margin)
+
+             doc.setFontSize(9); // Tamaño normal para ticket
+             doc.setFont('courier', 'normal'); // Fuente monoespaciada
+
+             // --- Contenido del Ticket (similar a generateTicketHTML pero con comandos jsPDF) ---
+             const center = (text) => doc.text(text, 40, y, { align: 'center' });
+             const left = (text) => doc.text(text, margin, y);
+             // Función para texto alineado: izquierda y derecha en la misma línea
+             const leftRight = (leftText, rightText, isBold = false) => {
+                 if(isBold) doc.setFont('courier', 'bold');
+                 doc.text(leftText, margin, y);
+                 doc.text(rightText, 80 - margin, y, { align: 'right'});
+                  if(isBold) doc.setFont('courier', 'normal');
+                 y += lineHeight;
+             }
+             const separator = () => { doc.text('-'.repeat(48), margin, y); y += lineHeight; }
+
+             center("JAVI'S COATEPEC"); y += lineHeight * 1.5;
+             // center("************************"); y += lineHeight;
+
+             leftRight(`Pedido #: ${order.number}`, `Mesa: ${order.table}`);
+             left(`Fecha: ${new Date(order.orderTime || Date.now()).toLocaleString()}`); y += lineHeight;
+             left(`Mesero: ${order.waiter || 'N/A'}`); y += lineHeight;
+             separator();
+
+             leftRight('Cant Producto', 'Importe');
+             // separator(); // Doble separador opcional
+
+             order.items.forEach(item => {
+                  const itemTotal = (item.quantity * item.price).toFixed(2);
+                  const namePart = `${item.quantity} ${item.name}`;
+                   // Truncar nombre si es muy largo para evitar solapamiento
+                   const maxNameWidthChars = 28; // Ajustar según fuente y tamaño
+                   const truncatedNamePart = namePart.length > maxNameWidthChars ? namePart.substring(0, maxNameWidthChars -1) + '.' : namePart;
+
+                  leftRight(truncatedNamePart, `$${itemTotal}`);
+                  if (item.specialInstructions) {
+                        doc.setFontSize(7);
+                        doc.text(`  *Inst: ${item.specialInstructions.substring(0, 40)}`, margin + 2, y); y += lineHeight * 0.8;
+                        doc.setFontSize(9);
+                  }
+             });
+
+             separator();
+
+             leftRight('Subtotal:', `$${order.total.toFixed(2)}`);
+
+             if ((order.discountPercentage || 0) > 0) {
+                const discountAmount = (order.total * order.discountPercentage / 100);
+                const subTotalAfterDiscount = order.total - discountAmount;
+                 leftRight(`Desc.(${order.discountPercentage.toFixed(1)}%):`, `-$${discountAmount.toFixed(2)}`);
+                 leftRight('Subt. c/Desc:', `$${subTotalAfterDiscount.toFixed(2)}`);
+             }
+              if ((order.tip || 0) > 0) {
+                 leftRight('Propina:', `$${(order.tip || 0).toFixed(2)}`);
+             }
+
+             doc.setFont('courier', 'bold'); // Resaltar total
+              y += lineHeight * 0.5; // Pequeño espacio extra
+             doc.text('='.repeat(48), margin, y); y += lineHeight;
+             leftRight('TOTAL:', `$${(order.finalTotal || order.total).toFixed(2)}`, true); // Pasar true para negrita
+             doc.text('='.repeat(48), margin, y); y += lineHeight * 1.5;
+             doc.setFont('courier', 'normal');
+
+              if (order.paymentTime) {
+                  center(`Pagado: ${new Date(order.paymentTime).toLocaleString()}`); y+= lineHeight;
+              }
+
+             center("¡Gracias por tu visita!"); y += lineHeight;
+             // center("www.javiscoatepec.com"); y += lineHeight; // Ejemplo
+
+             // --- Guardar o Imprimir ---
+             // doc.autoPrint(); // Intenta abrir diálogo de impresión (puede ser bloqueado por navegador)
+             doc.save(`Ticket_Pedido_${order.number}.pdf`); // Descarga el PDF
+             console.log(`PDF del ticket ${order.number} generado.`);
+              showLoading(false);
+             // No cerrar modal automáticamente, permitir al usuario hacerlo
+             // closeModal('ticketModal');
+
+         } catch (error) {
+              console.error("Error al generar/guardar PDF del ticket:", error);
+              showLoading(false);
+              alert("Error al generar el PDF del ticket.");
+         }
+    }
+
+    // --- Búsqueda de Pedidos ---
+    function updateSearchInput() {
+      const criteria = document.getElementById('searchCriteria').value;
+      const searchInputContainer = document.getElementById('searchInputContainer');
+      searchInputContainer.innerHTML = ''; // Limpiar
+
+      let inputElement;
+      let label = document.createElement('label');
+       label.htmlFor = 'searchQuery';
+
+
+      switch(criteria) {
+           case 'waiter':
+              label.textContent = 'Selecciona Mesero:';
+              inputElement = document.createElement('select');
+              inputElement.id = 'searchQuery';
+              inputElement.innerHTML = '<option value="">-- Todos --</option>';
+              // Usar Set para obtener meseros únicos de los pedidos existentes + lista base
+               const uniqueWaiters = [...new Set([...waiters, ...orders.map(o => o.waiter).filter(w => !!w)])].sort();
+              uniqueWaiters.forEach(w => inputElement.add(new Option(w, w)));
+              break;
+           case 'table':
+               label.textContent = 'Selecciona Mesa:';
+               inputElement = document.createElement('select');
+               inputElement.id = 'searchQuery';
+               inputElement.innerHTML = '<option value="">-- Todas --</option>';
+               tables.sort((a,b) => a.number - b.number).forEach(t => inputElement.add(new Option(`Mesa ${t.number}`, t.number.toString())));
+               break;
+           case 'status':
+               label.textContent = 'Selecciona Estado:';
+               inputElement = document.createElement('select');
+               inputElement.id = 'searchQuery';
+               // Usar los estados definidos en la constante
+               const statuses = Object.values(ORDER_STATUS);
+               inputElement.innerHTML = '<option value="">-- Todos --</option>';
+               statuses.forEach(s => inputElement.add(new Option(s, s)));
+               break;
+           case 'orderNumber':
+           default:
+               label.textContent = 'Número de Pedido:';
+               inputElement = document.createElement('input');
+               inputElement.type = 'number';
+               inputElement.id = 'searchQuery';
+               inputElement.placeholder = 'Ingresa el número exacto...';
+               break;
+      }
+        // inputElement.className = 'form-control'; // Añadir clase si usas bootstrap o similar
+        searchInputContainer.appendChild(label);
+        searchInputContainer.appendChild(inputElement);
+    }
+
+    function searchOrders() {
+      const criteria = document.getElementById('searchCriteria').value;
+      const searchQueryElement = document.getElementById('searchQuery');
+      const query = searchQueryElement.value.trim(); // Usar trim para strings
+      const resultsContainer = document.getElementById('searchResults');
+      resultsContainer.innerHTML = ''; // Limpiar resultados
+
+      if (!query && ['orderNumber'].includes(criteria)) { // No buscar si el número está vacío
+           resultsContainer.innerHTML = '<p style="text-align: center; color: #777;">Ingresa un número de pedido para buscar.</p>';
+           return;
+      }
+
+       const lowerCaseQuery = typeof query === 'string' ? query.toLowerCase() : query; // Para búsquedas insensibles si es string
+
+       const filtered = orders.filter(order => {
+           switch (criteria) {
+             case 'orderNumber':
+               // Comparación exacta para número de pedido
+               return order.number.toString() === query;
+             case 'table':
+               // Comparación exacta de número de mesa (si se selecciona uno)
+               return query ? order.table.toString() === query : true; // Mostrar todos si no se selecciona mesa
+             case 'waiter':
+                // Comparación exacta si se selecciona mesero
+                return query ? order.waiter === query : true; // Mostrar todos si no se selecciona
+              case 'status':
+                // Comparación exacta si se selecciona estado
+                return query ? order.status === query : true; // Mostrar todos si no se selecciona
+             default:
+               return false;
+           }
+       }).sort((a, b) => new Date(b.orderTime || 0) - new Date(a.orderTime || 0)); // Ordenar por fecha descendente
+
+
+      if (filtered.length > 0) {
+        filtered.forEach(order => {
+          const orderCard = document.createElement('div');
+          orderCard.className = 'order-card'; // Reutilizar estilo de tarjeta
+          orderCard.innerHTML = `
+            <h3>Pedido #${order.number}</h3>
+            <p>Mesa: ${order.table} | Mesero: ${order.waiter || 'N/A'}</p>
+            <p>Fecha: ${order.orderTime ? new Date(order.orderTime).toLocaleString() : 'N/A'}</p>
+            <p>Estado: <strong>${order.status}</strong></p>
+            <p>Total: $${(order.finalTotal || order.total || 0).toFixed(2)}</p>
+            <div style="margin-top: 10px;">
+                <button onclick="viewOrderDetails(${order.number})" class="btn btn-sm btn-info">👁️ Ver Detalles</button>
+                ${isActiveOrder(order) ? `<button onclick="goToOrderSection(${order.number})" class="btn btn-sm btn-primary">➡️ Ir a Pedido</button>` : ''}
+                 ${order.status === ORDER_STATUS.PAGADO ? `<button onclick="showTicketModal(${order.number})" class="btn btn-sm btn-secondary">📄 Ver Ticket</button>` : ''}
+            </div>
+            <div id="details-${order.number}" style="display: none; margin-top: 10px; font-size: 0.9rem; background-color: var(--light-color); padding: 10px; border-radius: 4px;">
+                 <!-- Detalles se cargarán aquí -->
+            </div>
+          `;
+          resultsContainer.appendChild(orderCard);
+        });
+      } else {
+        resultsContainer.innerHTML = '<p style="text-align: center; color: #777;">No se encontraron pedidos que coincidan con la búsqueda.</p>';
+      }
+    }
+
+    // Muestra/oculta los detalles de un pedido en la búsqueda
+    function viewOrderDetails(orderNum) {
+        const detailsDiv = document.getElementById(`details-${orderNum}`);
+        const order = orders.find(o => o.number === orderNum);
+        if (!detailsDiv || !order) return;
+
+        if (detailsDiv.style.display === 'none') {
+             let itemsHTML = '<ul>';
+             if (order.items && order.items.length > 0) {
+                  order.items.forEach(item => {
+                     itemsHTML += `<li data-item-status="${item.status}">${item.quantity}x ${item.name} ($${item.price.toFixed(2)})${item.specialInstructions ? ` <small>[${item.specialInstructions}]</small>`: ''} - <i>${item.status}</i></li>`;
+                 });
+             } else {
+                  itemsHTML += '<li>No hay detalles de items disponibles (posiblemente importado sin items).</li>';
+             }
+
+             itemsHTML += '</ul>';
+            detailsDiv.innerHTML = `<strong>Items:</strong>${itemsHTML}`;
+            detailsDiv.style.display = 'block';
+        } else {
+            detailsDiv.style.display = 'none';
+        }
+    }
+
+    // Navega a la sección de pedidos para un pedido específico (desde búsqueda)
+    function goToOrderSection(orderNum) {
+        const order = orders.find(o => o.number === orderNum && isActiveOrder(o));
+        if (order) {
+            currentTable = order.table; // Establecer la mesa actual
+            updatePedidosTabState(); // Habilitar tab
+            // showSection ya cargará el pedido correcto con loadOrderForTable
+            showSection('orders');
+        } else {
+             alert("No se puede ir a este pedido (puede estar pagado, cancelado o no encontrado).");
+        }
+    }
+
+
+    // --- Inicialización al cargar la página ---
+    window.onload = init;
+
+    // --- Actualizaciones Periódicas (Ej: Tiempo de Mesa) ---
+    setInterval(() => {
+      // Solo actualizar si la sección de mesas está activa Y no hay modales abiertos
+      if (document.getElementById('tables').classList.contains('active') &&
+          !document.querySelector('.modal[style*="display: block"]')) {
+         renderTables();
+      }
+      // Opcional: Actualizar tiempo en cocina si está activa
+      if (document.getElementById('kitchen').classList.contains('active') &&
+           !document.querySelector('.modal[style*="display: block"]')) {
+           renderKitchenOrders(); // Esto recalcula el tiempo transcurrido
+      }
+    }, 30000); // Actualizar tiempo cada 30 segundos
+
+  </script>
+</body>
+</html>
